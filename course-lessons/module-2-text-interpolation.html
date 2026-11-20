@@ -1,0 +1,62 @@
+<p class="callout"><strong>INFO</strong></p>
+<h3><strong>Original article: </strong><a href="https://angular.io/guide/interpolation" target="_blank" rel="noopener noreferrer"><strong>Text interpolation</strong></a><strong>.</strong></h3>
+<p class="callout"><strong>VIDEO</strong></p>
+<h3><strong>Watch a video on this topic: </strong><a href="https://www.linkedin.com/learning/angular-essential-training-2/interpolation-and-the-expression-context" target="_blank" rel="noopener noreferrer"><strong>Interpolation and the expression context</strong></a></h3>
+<p>Text interpolation lets you incorporate dynamic string values into your HTML templates. Use interpolation to dynamically change what appears in an application view, such as displaying a custom greeting that includes the user&#x27;s name.</p>
+<h3><strong>Displaying values with interpolation</strong></h3>
+<p>Interpolation refers to embedding expressions into marked up text. By default, interpolation uses the double curly braces <code>{{</code> and <code>}}</code> as delimiters.</p>
+<p>To illustrate how interpolation works, consider an Angular component that contains a currentCustomer variable:</p>
+<p>src/app/app.component.ts</p>
+<pre><code>currentCustomer = &quot;Mario&quot;;</code></pre>
+<p>Use interpolation to display the value of this variable in the corresponding component template:</p>
+<p>src/app/app.component.html</p>
+<pre><code>&lt;h3&gt;Current customer: {{ currentCustomer }}&lt;/h3&gt;</code></pre>
+<p>Angular replaces <code>currentCustomer</code> with the string value of the corresponding component property. In this case, the value is <code>Mario</code>.</p>
+<p>In the following example, Angular evaluates the <code>title</code> and <code>itemImageUrl</code> properties to display some title text and an image.</p>
+<p>src/app/app.component.html</p>
+<pre><code>&lt;p&gt;{{title}}&lt;/p&gt;
+&lt;div&gt;&lt;img alt=&quot;item&quot; src=&quot;{{itemImageUrl}}&quot; /&gt;&lt;/div&gt;</code></pre>
+<h3><strong>Template expressions</strong></h3>
+<p>A template expression produces a value and appears within double curly braces, <code>{{ }}</code>. Angular resolves the expression and assigns it to a property of a binding target. The target could be an HTML element, a component, or a directive.</p>
+<p><strong>Resolving expressions with interpolation</strong></p>
+<p>More generally, the text between the braces is a template expression that Angular first evaluates and then converts to a string. The following interpolation illustrates the point by adding two numbers:</p>
+<p>src/app/app.component.html</p>
+<pre><code>&lt;!-- &quot;The sum of 1 + 1 is 2&quot; --&gt;
+&lt;p&gt;The sum of 1 + 1 is {{1 + 1}}.&lt;/p&gt;</code></pre>
+<p>Expressions can also invoke methods of the host component such as <code>getVal()</code> in the following example:</p>
+<p>src/app/app.component.html</p>
+<pre><code>&lt;!-- &quot;The sum of 1 + 1 is not 4&quot; --&gt;
+&lt;p&gt;The sum of 1 + 1 is not {{1 + 1 + getVal()}}.&lt;/p&gt;</code></pre>
+<p>With interpolation, Angular performs the following tasks:</p>
+<ul><li>Evaluates all expressions in double curly braces.
+</li><li>Converts the expression results to strings.
+</li><li>Links the results to any adjacent literal strings.
+</li><li>Assigns the composite to an element or directive property.
+</li></ul>
+<p><strong>Syntax</strong></p>
+<p>Template expressions are similar to JavaScript. Many JavaScript expressions are legal template expressions, with the following exceptions.</p>
+<p>You can&#x27;t use JavaScript expressions that have or promote side effects, including:</p>
+<ul><li>Assignments (<code>=</code>, <code>+=</code>, <code>-=</code>, <code>...</code>)
+</li><li>Operators such as <code>new</code>, <code>typeof</code>, or <code>instanceof</code>
+</li><li>Chaining expressions with <code>;</code> or <code>,</code>
+</li><li>The increment and decrement operators <code>++</code> and <code>--</code>
+</li><li>Some of the ES2015+ operators
+</li></ul>
+<p>Other notable differences from JavaScript syntax include:</p>
+<ul><li>No support for the bitwise operators such as <code>|</code> and <code>&amp;</code>
+</li><li>New template expression operators, such as <code>|</code>, <code>?.</code> and <code>!</code>
+</li></ul>
+<h3><strong>Expression context</strong></h3>
+<p>Interpolated expressions have a context—a particular part of the application to which the expression belongs. , Typically, this context is the component instance.</p>
+<p>In the following snippet, the expression <code>recommended</code> and the expression <code>itemImageUrl2</code> refer to properties of the <code>AppComponent</code>.</p>
+<pre><code>&lt;h4&gt;{{recommended}}&lt;/h4&gt;
+&lt;img alt=&quot;item 2&quot; [src]=&quot;itemImageUrl2&quot; /&gt;</code></pre>
+<p>The following example uses a template input variable of <code>customer</code>.</p>
+<pre><code>&lt;ul&gt;
+ &lt;li *ngFor=&quot;let customer of customers&quot;&gt;{{customer.name}}&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+<p>This next example features a template reference variable, <code>#customerInput</code>.</p>
+<pre><code>&lt;label&gt;Type something: &lt;input #customerInput /&gt;{{customerInput.value}} &lt;/label&gt;</code></pre>
+<p class="callout"><strong>NOTE</strong></p>
+<p>Template expressions cannot refer to anything in the global namespace, except undefined. They can&#x27;t refer to window or document. Additionally, they can&#x27;t call console.log() or Math.max() and they are restricted to referencing members of the expression context.</p>
+<h3><strong>Try it out!</strong></h3>

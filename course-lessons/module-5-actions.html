@@ -1,0 +1,52 @@
+<p>Actions are one of the main building blocks in NgRx. Actions express unique events that happen throughout your application. From user interaction with the page, external interaction through network requests, and direct interaction with device APIs, these and more events are described with actions.</p>
+<h3><strong>Introduction</strong></h3>
+<p>Actions are used in many areas of NgRx. Actions are the inputs and outputs of many systems in NgRx. Actions help you to understand how events are handled in your application. This guide provides general rules and examples for writing actions in your application.</p>
+<h3><strong>The Action interface</strong></h3>
+<p>An <code>Action</code> in NgRx is made up of a simple interface:</p>
+<p>Action Interface</p>
+<pre><code>interface Action {
+ type: string;
+}</code></pre>
+<p>The interface has a single property, the <code>type</code>, represented as a string. The <code>type</code> property is for describing the action that will be dispatched in your application. The value of the type comes in the form of <code>[Source] Event</code> and is used to provide a context of what category of action it is, and where an action was dispatched from. You add properties to an action to provide additional context or metadata for an action.</p>
+<p>Listed below are examples of actions written as plain old JavaScript objects (POJOs):</p>
+<pre><code>{
+ type: &#x27;[Auth API] Login Success&#x27;
+}</code></pre>
+<p>This action describes an event triggered by a successful authentication after interacting with a backend API.</p>
+<pre><code>{
+ type: &#x27;[Login Page] Login&#x27;,
+ username: string;
+ password: string;
+}</code></pre>
+<p>This action describes an event triggered by a user clicking a login button from the login page to attempt to authenticate a user. The username and password are defined as additional metadata provided from the login page.</p>
+<h3><strong>Writing actions</strong></h3>
+<p>There are a few rules to writing good actions within your application.</p>
+<ul><li>Upfront - write actions before developing features to understand and gain a shared knowledge of the feature being implemented.
+</li><li>Divide - categorize actions based on the event source.
+</li><li>Many - actions are inexpensive to write, so the more actions you write, the better you express flows in your application.
+</li><li>Event-Driven - capture events <strong>not</strong> commands as you are separating the description of an event and the handling of that event.
+</li><li>Descriptive - provide context that are targeted to a unique event with more detailed information you can use to aid in debugging with the developer tools.
+</li></ul>
+<p>Following these guidelines helps you follow how these actions flow throughout your application.</p>
+<p>Let&#x27;s look at an example action of initiating a login request.</p>
+<p>login-page.actions.ts</p>
+<pre><code>import { createAction, props } from &#x27;@ngrx/store&#x27;;
+
+export const login = createAction(
+ &#x27;[Login Page] Login&#x27;,
+ props&lt;{ username: string; password: string }&gt;()
+);</code></pre>
+<p>The <code>createAction</code> function returns a function, that when called returns an object in the shape of the <code>Action</code> interface. The <code>props</code> method is used to define any additional metadata needed for the handling of the action. Action creators provide a consistent, type-safe way to construct an action that is being dispatched.</p>
+<p>Use the action creator to return the <code>Action</code> when dispatching.</p>
+<pre><code>onSubmit(username: string, password: string) {
+ store.dispatch(login({ username: username, password: password }));
+}</code></pre>
+<p>The <code>login</code> action creator receives an object of <code>username</code> and <code>password</code> and returns a plain JavaScript object with a <code>type</code> property of <code>[Login Page] Login</code>, with <code>username</code> and <code>password</code> as additional properties.</p>
+<p>The returned action has very specific context about where the action came from and what event happened.</p>
+<ul><li>The category of the action is captured within the square brackets <code>[]</code>.
+</li><li>The category is used to group actions for a particular area, whether it be a component page, backend API, or browser API.
+</li><li>The <code>Login</code> text after the category is a description about what event occurred from this action. In this case, the user clicked a login button from the login page to attempt to authenticate with a username and password.
+</li></ul>
+<p class="callout"><strong>NOTE</strong></p>
+<p>You can also write actions using class-based action creators, which was the previously defined way before action creators were introduced in NgRx. If you are looking for examples of class-based action creators, visit the documentation for versions 7.x and prior.</p>
+<h3><strong>Try it out!</strong></h3>

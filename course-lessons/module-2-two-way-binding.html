@@ -1,0 +1,45 @@
+<p class="callout"><strong>INFO</strong></p>
+<h3><strong>Original article: </strong><a href="https://angular.io/guide/two-way-binding" target="_blank" rel="noopener noreferrer"><strong>Two-way binding</strong></a><strong>.</strong></h3>
+<p>Two-way binding gives components in your application a way to share data. Use two-way binding to listen for events and update values simultaneously between parent and child components.</p>
+<h3><strong>Adding two-way data binding</strong></h3>
+<p>Angular&#x27;s two-way binding syntax is a combination of square brackets and parentheses, <code>[()]</code>. The <code>[()]</code> syntax combines the brackets of property binding, <code>[]</code>, with the parentheses of event binding, <code>()</code>, as follows.</p>
+<p>src/app/app.component.html</p>
+<pre><code>&lt;app-sizer [(size)]=&quot;fontSizePx&quot;&gt;&lt;/app-sizer&gt;</code></pre>
+<h3><strong>How two-way binding works</strong></h3>
+<p>For two-way data binding to work, the <code>@Output()</code> property must use the pattern, <code>inputChange</code>, where <code>input</code> is the name of the <code>@Input()</code> property. For example, if the <code>@Input()</code> property is <code>size</code>, the <code>@Output()</code> property must be <code>sizeChange</code>.</p>
+<p>The following <code>sizerComponent</code> has a <code>size</code> value property and a <code>sizeChange</code> event. The <code>size</code> property is an <code>@Input()</code>, so data can flow into the <code>sizerComponent</code>. The <code>sizeChange</code> event is an <code>@Output()</code>, which lets data flow out of the <code>sizerComponent</code> to the parent component.</p>
+<p>Next, there are two methods, <code>dec()</code> to decrease the font size and <code>inc()</code> to increase the font size. These two methods use <code>resize()</code> to change the value of the size property within min/max value constraints, and to emit an event that conveys the new <code>size</code> value.</p>
+<p>src/app/sizer.component.ts</p>
+<pre><code>export class SizerComponent {
+
+ @Input()  size!: number | string;
+ @Output() sizeChange = new EventEmitter&lt;number&gt;();
+
+ dec() { this.resize(-1); }
+ inc() { this.resize(+1); }
+
+ resize(delta: number) {
+   this.size = Math.min(40, Math.max(8, +this.size + delta));
+   this.sizeChange.emit(this.size);
+ }
+}</code></pre>
+<p>The <code>sizerComponent</code> template has two buttons that each bind the click event to the <code>inc()</code> and <code>dec()</code> methods. When the user clicks one of the buttons, the <code>sizerComponent</code> calls the corresponding method. Both methods, <code>inc()</code> and <code>dec()</code>, call the <code>resize()</code> method with a <code>+1</code> or <code>-1</code>, which in turn raises the <code>sizeChange</code> event with the new size value.</p>
+<p>src/app/sizer.component.html</p>
+<pre><code>&lt;div&gt;
+ &lt;button type=&quot;button&quot; (click)=&quot;dec()&quot; title=&quot;smaller&quot;&gt;-&lt;/button&gt;
+ &lt;button type=&quot;button&quot; (click)=&quot;inc()&quot; title=&quot;bigger&quot;&gt;+&lt;/button&gt;
+ &lt;span [style.font-size.px]=&quot;size&quot;&gt;FontSize: {{size}}px&lt;/span&gt;
+&lt;/div&gt;</code></pre>
+<p>In the <code>AppComponent</code> template, <code>fontSizePx</code> is two-way bound to the <code>SizerComponent</code>.</p>
+<p>src/app/app.component.html</p>
+<pre><code>&lt;app-sizer [(size)]=&quot;fontSizePx&quot;&gt;&lt;/app-sizer&gt;
+&lt;div [style.font-size.px]=&quot;fontSizePx&quot;&gt;Resizable Text&lt;/div&gt;</code></pre>
+<p>In the <code>AppComponent</code>, <code>fontSizePx</code> establishes the initial <code>SizerComponent.size</code> value by setting the value to <code>16</code>.</p>
+<p>src/app/app.component.ts</p>
+<pre><code>fontSizePx = 16;</code></pre>
+<p>Clicking the buttons updates the <code>AppComponent.fontSizePx</code>. The revised <code>AppComponent.fontSizePx</code> value updates the style binding, which makes the displayed text bigger or smaller.</p>
+<p>The two-way binding syntax is shorthand for a combination of property binding and event binding. The <code>SizerComponent</code> binding as separate property binding and event binding is as follows.</p>
+<p>src/app/app.component.html</p>
+<pre><code>&lt;app-sizer [size]=&quot;fontSizePx&quot; (sizeChange)=&quot;fontSizePx=$event&quot;&gt;&lt;/app-sizer&gt;</code></pre>
+<p>The <code>$event</code> variable contains the data of the <code>SizerComponent.sizeChange</code> event. Angular assigns the <code>$event</code> value to the <code>AppComponent.fontSizePx</code> when the user clicks the buttons.</p>
+<h3><strong>Try it out!</strong></h3>

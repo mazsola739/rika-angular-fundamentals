@@ -1,0 +1,47 @@
+<p class="callout"><strong>INFO</strong></p>
+<h3><strong>Original article: </strong><a href="https://angular.io/guide/event-binding" target="_blank" rel="noopener noreferrer"><strong>Event binding</strong></a><strong>.</strong></h3>
+<p class="callout"><strong>VIDEO</strong></p>
+<h3><strong>Watch a video on this topic: </strong><a href="https://www.linkedin.com/learning/angular-essential-training-2/event-binding" target="_blank" rel="noopener noreferrer"><strong>Event binding</strong></a></h3>
+<p>Event binding lets you listen for and respond to user actions such as keystrokes, mouse movements, clicks, and touches.</p>
+<h3><strong>Binding to events</strong></h3>
+<p>To bind to an event you use the Angular event binding syntax. This syntax consists of a target event name within parentheses to the left of an equal sign, and a quoted template statement to the right. In the following example, the target event name is <code>click</code> and the template statement is <code>onSave()</code>.</p>
+<pre><code>&lt;button (click)=&quot;onSave()&quot;&gt;Save&lt;/button&gt;</code></pre>
+<p>The event binding listens for the button&#x27;s click events and calls the component&#x27;s <code>onSave()</code> method whenever a click occurs.</p>
+<p><img src="course-lessons/img/image6.webp" alt="Binding to events"></p>
+<h3><strong>Custom events with EventEmitter</strong></h3>
+<p>Directives typically raise custom events with an Angular <code>EventEmitter</code> as follows.</p>
+<ul><li>The directive creates an <code>EventEmitter</code> and exposes it as a property.
+</li><li>The directive then calls <code>EventEmitter.emit(data)</code> to emit an event, passing in message data, which can be anything.
+</li><li>Parent directives listen for the event by binding to this property and accessing the data through the <code>$event</code> object.
+</li></ul>
+<p>Consider an <code>ItemDetailComponent</code> that presents item information and responds to user actions. Although the <code>ItemDetailComponent</code> has a delete button, it doesn&#x27;t contain the functionality to delete the hero. It can only raise an event reporting the user&#x27;s delete request.</p>
+<p>src/app/item-detail/item-detail.component.html</p>
+<pre><code>&lt;img src=&quot;{{itemImageUrl}}&quot; alt=&quot;{{item.name}}&quot; [style.display]=&quot;displayNone&quot; /&gt;
+&lt;span [style.text-decoration]=&quot;lineThrough&quot;&gt;{{ item.name }} &lt;/span&gt;
+&lt;button type=&quot;button&quot; (click)=&quot;delete()&quot;&gt;Delete&lt;/button&gt;</code></pre>
+<p>The component defines a <code>deleteRequest</code> property that returns an <code>EventEmitter</code>. When the user clicks Delete, the component invokes the <code>delete()</code> method, telling the <code>EventEmitter</code> to emit an <code>Item</code> object.</p>
+<p>src/app/item-detail/item-detail.component.ts</p>
+<pre><code>// This component makes a request but it can&#x27;t actually delete a hero.
+@Output() deleteRequest = new EventEmitter&lt;Item&gt;();
+
+delete() {
+ this.deleteRequest.emit(this.item);
+ this.displayNone = this.displayNone ? &#x27;&#x27; : &#x27;none&#x27;;
+ this.lineThrough = this.lineThrough ? &#x27;&#x27; : &#x27;line-through&#x27;;
+}</code></pre>
+<p>The hosting parent component binds to the <code>deleteRequest</code> event of the <code>ItemDetailComponent</code> as follows.</p>
+<p>src/app/app.component.html</p>
+<pre><code>&lt;app-item-detail
+ (deleteRequest)=&quot;deleteItem($event)&quot;
+ [item]=&quot;currentItem&quot;
+&gt;&lt;/app-item-detail&gt;</code></pre>
+<p>When the <code>deleteRequest</code> event fires, Angular calls the parent component&#x27;s <code>deleteItem()</code> method with the item.</p>
+<h3><strong>Determining an event target</strong></h3>
+<p>To determine an event target, Angular checks if the name of the target event matches an event property of a known directive. In the following example, Angular checks to see if <code>myClick</code> is an event on the custom <code>ClickDirective</code>.</p>
+<pre><code>&lt;h4&gt;myClick is an event on the custom ClickDirective:&lt;/h4&gt;
+&lt;button type=&quot;button&quot; (myClick)=&quot;clickMessage=$event&quot; clickable&gt;
+ click with myClick
+&lt;/button&gt;
+{{clickMessage}}</code></pre>
+<p>If the target event name, <code>myClick</code> fails to match an element event or an output property of <code>ClickDirective</code>, Angular reports an &quot;unknown directive&quot; error.</p>
+<h3><strong>Try it out!</strong></h3>

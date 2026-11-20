@@ -1,0 +1,56 @@
+<p class="callout"><strong>INFO</strong></p>
+<h3><strong>Official angular documentation: </strong><a href="https://angular.io/guide/form-validation#validating-input-in-reactive-forms" target="_blank" rel="noopener noreferrer"><strong>Validating input in reactive forms</strong></a><strong>.</strong></h3>
+<p class="callout"><strong>VIDEO</strong></p>
+<h3><strong>Watch a video:</strong></h3>
+<p>📍 <a href="https://www.linkedin.com/learning/angular-essential-training-2/validation-built-in" target="_blank" rel="noopener noreferrer"><strong>1.Validation Built-in</strong></a></p>
+<p>📍 <a href="https://www.linkedin.com/learning/angular-essential-training-2/error-handling" target="_blank" rel="noopener noreferrer"><strong>2.Error handling</strong></a></p>
+<p>In a reactive form, the source of truth is the component class. Instead of adding validators through attributes in the template, you add validator functions directly to the form control model in the component class. Angular then calls these functions whenever the value of the control changes</p>
+<h3><strong>Validator functions</strong></h3>
+<ul><li>Sync validators: Synchronous functions that take a control instance and immediately return either a set of validation errors or <code>null</code>. Pass these in as the second argument when you instantiate a <code>FormControl</code>.
+</li><li>Async validators: Asynchronous functions that take a control instance and return a <strong>Promise</strong> or <strong>Observable</strong> that later emits a set of validation errors or <code>null</code>. Pass these in as the third argument when you instantiate a <code>FormControl</code>.
+</li></ul>
+<p>💡 For performance reasons, Angular only runs async validators if all sync validators pass. Each must complete before errors are set.</p>
+<h3><strong>Built-in validator functions</strong></h3>
+<p>You can choose to write your own validator functions, or you can use some of Angular&#x27;s built-in validators.</p>
+<p>The same built-in validators that are available as attributes in template-driven forms, such as <code>required</code> and <code>minlength</code>, are all available to use as functions from the Validators class. For a full list of built-in validators, see the <a href="https://angular.io/api/forms/Validators" target="_blank" rel="noopener noreferrer"><strong>Validators API</strong></a> reference.</p>
+<p>Let&#x27;s see an example how to use some of the same built-in validators—this time, in function form.</p>
+<p>example-reactive-form-validation.component.ts</p>
+<pre><code>ngOnInit(): void {
+ this.heroForm = new FormGroup({
+   name: new FormControl(this.hero.name, [
+     Validators.required,
+     Validators.minLength(4),
+     forbiddenNameValidator(/bob/i) // &lt;-- Here&#x27;s how you pass in the custom validator.
+   ]),
+   alterEgo: new FormControl(this.hero.alterEgo),
+   power: new FormControl(this.hero.power, Validators.required)
+ });
+
+}
+
+get name() { return this.heroForm.get(&#x27;name&#x27;); }
+
+get power() { return this.heroForm.get(&#x27;power&#x27;); }</code></pre>
+<p>In this example, the name control sets up two built-in validators — <code>Validators.required</code> and <code>Validators.minLength(4)</code> — and one custom validator, <code>forbiddenNameValidator</code>. (For more details see custom validators.)</p>
+<p>💡 All of these validators are synchronous, so they are passed as the second argument. Notice that you can support multiple validators by passing the functions in as an array.</p>
+<p>This example also adds a few getter methods. In a reactive form, you can always access any form control through the <code>get</code> method on its parent group, but sometimes it&#x27;s useful to define getters as shorthand for the template.</p>
+<p>If you look at the template for the name input again, it is fairly similar to the template-driven example.</p>
+<p>example-reactive-form-validation.component.html</p>
+<pre><code>&lt;input type=&quot;text&quot; id=&quot;name&quot; class=&quot;form-control&quot;
+     formControlName=&quot;name&quot; required&gt;
+
+&lt;div *ngIf=&quot;name.invalid &amp;&amp; (name.dirty || name.touched)&quot;
+   class=&quot;alert alert-danger&quot;&gt;
+
+ &lt;div *ngIf=&quot;name.errors?.[&#x27;required&#x27;]&quot;&gt;
+   Name is required.
+ &lt;/div&gt;
+ &lt;div *ngIf=&quot;name.errors?.[&#x27;minlength&#x27;]&quot;&gt;
+   Name must be at least 4 characters long.
+ &lt;/div&gt;
+ &lt;div *ngIf=&quot;name.errors?.[&#x27;forbiddenName&#x27;]&quot;&gt;
+   Name cannot be Bob.
+ &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+<p>This form differs from the template-driven version in that it no longer exports any directives. Instead, it uses the <strong>name getter</strong> defined in the component class.</p>
+<p>Notice that the <code>required</code> attribute is still present in the template. Although it&#x27;s not necessary for validation, it should be retained to for <strong>accessibility purposes</strong>.</p>

@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core'
 import { Router, RouterLink } from '@angular/router'
 import { AuthService } from '../../../auth/services/auth.service'
 import { BROWSER_API, usesBrowserApi } from '../../../core/api'
-import { PORTFOLIO_URL, REPO_URL } from '../../../site'
+import { PORTFOLIO_URL, REACT_APP_URL, REPO_URL } from '../../../site'
 import { UserStoreService } from '../../../user/services/user-store.service'
 import { ExternalLink } from '../external-link/external-link'
 
@@ -20,6 +20,7 @@ export class Footer {
 
   protected readonly repoUrl = REPO_URL
   protected readonly portfolioUrl = PORTFOLIO_URL
+  protected readonly reactAppUrl = REACT_APP_URL
   protected readonly canReset = usesBrowserApi()
 
   /** Every visitor has their own data in localStorage; this brings the seed data back. */

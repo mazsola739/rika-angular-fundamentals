@@ -1,0 +1,116 @@
+<p class="callout"><strong>INFO</strong></p>
+<h2><a href="https://rxjs-dev.firebaseapp.com/guide/observable" target="_blank" rel="noopener noreferrer"><strong>Official RxJS documentation</strong></a><strong>.</strong></h2>
+<p class="callout"><strong>VIDEO</strong></p>
+<h3><strong>Watch a video on this topic:</strong></h3>
+<p><a href="https://www.linkedin.com/learning/learning-rxjs/the-observer-pattern?autoplay=true&amp;resume=false&amp;u=2113185" target="_blank" rel="noopener noreferrer">The observer pattern</a></p>
+<h2><strong>Pull vs Push context</strong></h2>
+<p>To understand Observables, first, you have to understand the <em>pull</em> and <em>push</em> context. In JavaScript, there are two systems of communication called push and pull.</p>
+<p>A <em>pull</em> system is basically a function. A function is usually first defined (a process called production) and then somewhere along the line called (this process is called consumption) to return the data or value in the function. For functions, the producer (which is the definition) does not have any idea of when the data is going to be consumed, so the function call literally pulls the return value or data from the producer.</p>
+<p>A <em>push</em> system, on the other hand, control rests on the producer, the consumer does not know exactly when the data will get passed to it. A common example is promises in JavaScript, promises (producers) push already resolved value to call-backs (consumers). Another example is RxJS Observables, Observables produces multiple values called a stream (unlike promises that return one value) and pushes them to observers which serve as consumers.</p>
+<h2><strong>What is a Stream?</strong></h2>
+<p>A stream is basically a sequence of data values over time, this can range from a simple increment of numbers printed in 6 seconds (0,1,2,3,4,5) or coordinates printed over time, and even the data value of inputs in a form or chat texts passed through web sockets or API responses. These all represent data values that will be collected over time, hence the name stream.</p>
+<h2><strong>Understanding Observables</strong></h2>
+<p>Streams are important to understand because they are facilitated by RxJS Observables. An Observable is basically a function that can return a stream of values to an observer over time, this can either be synchronously or asynchronously. The data values returned can go from zero to an infinite range of values.</p>
+<h3><strong>Think of a newsletter</strong></h3>
+<p>Think of Observables as a newsletter. For many aspects, an Observable is like a newsletter and we will see how.</p>
+<p><img src="course-lessons/img/image26.webp" alt="Observable newsletter"></p>
+<p>The image above represents an Observable as a newsletter. A newsletter is a source of data (emails) but until you subscribe to it, you don’t receive any email.</p>
+<p>After you subscribe to a newsletter you will start to receive a stream of emails (i.e. exactly six in the image above) over a period of time. You will keep receiving emails until you unsubscribe from the newsletter.</p>
+<p>Let’s review the steps we take to receive emails.</p>
+<ul><li><strong>Subscribe to a newsletter.</strong> A newsletter is a data source (of emails) that doesn’t send you any email until you subscribe to it. When you want to receive some emails/content/data, you simply subscribe to a newsletter.
+</li><li><strong>Start receiving emails.</strong> Once you subscribe to the newsletter, you will start to receive some emails. You will keep receiving emails until you unsubscribe from the newsletter. However, you don’t know exactly how many emails or when you will receive them because it is the newsletter providers that decide. Therefore, you can think of it as a stream of emails/data over a period of time.
+</li><li><strong>Unsubscribe.</strong> Eventually, when you are no longer interested in the content, you unsubscribe (you unsubscribe, right?) from the newsletter to avoid filling up our inbox with unnecessary emails.
+</li></ul>
+<p>If you understand these steps, understanding Observables in the next paragraph will be much easier.</p>
+<h3><strong>From newsletters to Observables</strong></h3>
+<p>I will now follow the same steps to explain Observables.</p>
+<p><img src="course-lessons/img/image20.webp" alt="Observable newsletter"></p>
+<p><strong>Think of Observables as data sources</strong>, like newsletters are a source of emails. As Observables emit data, newsletters send emails.</p>
+<ul><li><strong>Subscribe to the Observable.</strong> An Observable is a data source but it doesn’t emit any data until you subscribe. For this reason, we say that Observables are lazy. Subscribe to an Observable by using the aptly named subscribe() method: <code>myObservable.subscribe()</code>
+</li><li><strong>Start receiving data.</strong> Once you subscribe to the Observable, you will start to receive some data. You will keep receiving “data packages” until you unsubscribe from the Observable. However, you don’t know exactly how many “data packages” or when you will receive them because it is the Observable that decides. For this reason, we say that <em>Observables push values</em>. You can think of Observables as a stream of data over a period of time.
+</li><li><strong>Unsubscribe.</strong> Finally, when you don’t need any more data you unsubscribe using the unsubscribe() method: <code>myObservable.unsubscribe()</code>. This is important to prevent memory leaks. Note that when using an Observable created by Angular it is not necessary to unsubscribe because Angular handles unsubscription automatically. An example is the params observable in the context of routing.
+</li></ul>
+<p>An Observer subscribes to an Observable. An Observable emits data to its Observers by calling the Observers’ methods.</p>
+<h2><strong>Creating Observables</strong></h2>
+<p class="callout"><strong>VIDEO</strong></p>
+<h3><strong>Watch a video on this topic:</strong></h3>
+<p><a href="https://www.linkedin.com/learning/learning-rxjs/create-an-observable?autoplay=true&amp;resume=false&amp;u=2113185" target="_blank" rel="noopener noreferrer">Create an observable</a></p>
+<p>To create an Observable, first, you have to import Observable from RxJS in the .ts file of the component you want to create it in. The creation syntax looks something like this:</p>
+<pre><code>import { Observable } from &quot;rxjs&quot;;
+
+var observable = Observable.create((observer: any) =&gt; {
+ observer.next(&quot;Hello World!&quot;);
+});</code></pre>
+<h2><strong>Observable lifecycle</strong></h2>
+<p>With some help from observers and subscriptions the Observable instance passes through these four stages throughout its lifetime:</p>
+<ul><li>Creation
+</li><li>Subscription
+</li><li>Execution
+</li><li>Destruction
+</li></ul>
+<h2><strong>Observers and subscriptions</strong></h2>
+<p>For Observables to work there needs to be observers and subscriptions. Observables are data source wrappers and then the observer executes some instructions when there is a new value or a change in data values. The Observable is connected to the observer who does the execution through subscription, with a subscribe method the observer connects to the observable to execute a code block.</p>
+<p>To tell RxJS to execute the code block on the Observable, or in a simpler term, to call the Observable to begin execution you have to use the subscribe method like this:</p>
+<pre><code>let observable = Observable.create((observer) =&gt; {
+ observer.next(&quot;Hello World!&quot;);
+});
+observable.subscribe(function logMessage(message) {
+ console.log(message);
+});</code></pre>
+<p>This subscribe method will cause “hello world” to be logged in the console.</p>
+<h2><strong>Executing Observables</strong></h2>
+<p>The Observer is in charge of executing instructions in the Observable, so each observer that subscribes can deliver three values to the Observable:</p>
+<ul><li>Next value: With the next value, Observer sends a value that can be a number, a string or any other type of data. There can be more than one next notifications set on a particular Observable
+</li><li>Error value: With the error value, the observer sends a JavaScript exception. If an error is found in the Observable, nothing else can be delivered to the Observable
+</li><li>Complete value: With the complete value, the observer sends no value. This usually signals that the subscriptions for that particular Observable is complete. If the complete value is sent, nothing else can be delivered to the Observable.
+</li></ul>
+<p>This can be illustrated with the code block below:</p>
+<pre><code>let observable = Observable.create((observer: any) =&gt; {
+ observer.next(&quot;I am number 1&quot;);
+ observer.next(&quot;I am number 2&quot;);
+ observer.error(&quot;I am number 3&quot;);
+ observer.complete(&quot;I am number 4&quot;);
+ observer.next(&quot;I am number 5&quot;);
+});
+
+observable.subscribe(function logMessage(message: any) {
+ console.log(message);
+});</code></pre>
+<p>When you open up the console in the developer tools your log will look like this:</p>
+<p><img src="course-lessons/img/image19.webp" alt="error in console"> You will notice that either the error value or complete value automatically stops execution and so the number 5 never shows up in the console. This is a simple synchronous exercise. To make it asynchronous, let us wrap timers around some of the values.</p>
+<h2><strong>Cold vs. Hot Observables</strong></h2>
+<p>The observable could get its data from any source really. It could get data from various Web APIs, such as DOM events, Websockets, Fetch or Geolocation. It could loop over an iterable, or even send hard-coded values like we often do in blog posts and tutorials.</p>
+<p>The code responsible for producing data for an observable is the actual producer part of the observable. It is important to highlight that we could define the producer within the observable function body or reference a producer that has been defined outside the observable body.</p>
+<p>A cold observable contains the code to produce data, while a hot observable closes over it.</p>
+<h3><strong>Cold Observables</strong></h3>
+<p>The characteristics of cold observables follow from data being produced as part of the observable function.</p>
+<ul><li><strong>Cold observables won’t produce data until we subscribe.</strong> When we subscribe to an observable, it executes the observable function. Since the code for the producer is included within the observable function, it only runs when the observable function is called.
+</li><li><strong>Cold observables are unicast.</strong> Each subscription executes the observable function and thus the code to produce data. For example, if the observable creates an instance of an object or a random value, each observer will get its own separate instance or unique value.
+</li></ul>
+<p>Example: A <em>cold</em> observable instance where the observable function creates a random number using the JavaScript built-in Math object.</p>
+<pre><code>import { Observable } from &quot;rxjs&quot;;
+
+const randomNumberCold$ = new Observable((observer) =&gt; {
+ const random = Math.random();
+ observer.next(random);
+ observer.complete();
+});</code></pre>
+<p>Each observer gets a separate random value since each subscription executes Math.random():</p>
+<pre><code>randomNumberCold$.subscribe(console.log); // 0.8249378778010443
+randomNumberCold$.subscribe(console.log); // 0.36532653367650236</code></pre>
+<h3><strong>Hot Observable</strong></h3>
+<p>Hot observables emit data that was produced outside the observable function body.</p>
+<p>The data is generated independently of whether an observer subscribes to the observable or not. The observable function simply accesses the data that is already produced (outside the function) and emits the data to observers.</p>
+<p>All the observers will get the same data. Thus, a hot observable is said to be multicast.</p>
+<p>For example, here’s the random number example rewritten as a hot observable.</p>
+<pre><code>const random = Math.random();
+console.log(random); // 0.05659653519968999
+
+const randomNumberHot$ = new Observable((observer) =&gt; {
+ observer.next(random);
+ observer.complete();
+});</code></pre>
+<p>The random number is generated independently of our subscriptions to randomNumberHot$. You’ll notice that we haven’t subscribed to observable yet.</p>
+<p>Each observer randomNumberHot$ gets the same random number because Math.random() is only executed once.</p>
+<pre><code>randomNumberHot$.subscribe(console.log); // 0.05659653519968999
+randomNumberHot$.subscribe(console.log); // 0.05659653519968999</code></pre>

@@ -5,6 +5,7 @@ import {
   TitleStrategy,
   withComponentInputBinding,
   withHashLocation,
+  withInMemoryScrolling,
 } from '@angular/router'
 import { provideEffects } from '@ngrx/effects'
 import { provideStore } from '@ngrx/store'
@@ -20,7 +21,13 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     // Hash routing: GitHub Pages serves only index.html, so /#/courses/add works on a reload too.
-    provideRouter(routes, withHashLocation(), withComponentInputBinding()),
+    provideRouter(
+      routes,
+      withHashLocation(),
+      withComponentInputBinding(),
+      // A new page (e.g. the next lesson) starts at the top; Back returns to where you were.
+      withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }),
+    ),
     { provide: TitleStrategy, useClass: PageTitleStrategy },
     provideHttpClient(
       withFetch(),

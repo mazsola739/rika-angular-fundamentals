@@ -1,0 +1,90 @@
+<p class="callout"><strong>INFO</strong></p>
+<h3><strong>Original article: </strong><a href="https://angular.io/guide/hello-world" target="_blank" rel="noopener noreferrer"><strong>Components Overview</strong></a><strong>.</strong></h3>
+<h3><strong>Creating a component using the Angular CLI</strong></h3>
+<p>To create a component using the Angular CLI:</p>
+<ul><li>From a terminal window, navigate to the directory containing your application.
+</li><li>Run the <code>ng generate component &lt;component-name&gt;</code> command, where <code>&lt;component-name&gt;</code> is the name of your new component.
+</li></ul>
+<p>Example:</p>
+<pre><code>ng generate component hello-world</code></pre>
+<p>By default, this command creates the following:</p>
+<ul><li>A folder named after the component
+</li><li>A component file, <code>&lt;component-name&gt;.component.ts</code>
+</li><li>A template file, <code>&lt;component-name&gt;.component.html</code>
+</li><li>A CSS file, <code>&lt;component-name&gt;.component.css</code>
+</li><li>A testing specification file, <code>&lt;component-name&gt;.component.spec.ts</code>
+</li></ul>
+<p>Where <code>&lt;component-name&gt;</code> is the name of your component.</p>
+<h3><strong>Creating a component manually</strong></h3>
+<p>Although the Angular CLI is the best way to create an Angular component, you can also create a component manually. To create a new component manually:</p>
+<ul><li>Navigate to your Angular project directory.
+</li><li>Create a new file, <code>&lt;component-name&gt;.component.ts</code>.
+</li><li>At the top of the file, add the following import statement.
+</li></ul>
+<pre><code>import { Component } from &quot;@angular/core&quot;;</code></pre>
+<ul><li>After the <code>import</code> statement, add a <code>@Component</code> decorator.
+</li></ul>
+<pre><code>@Component({})</code></pre>
+<ul><li>Choose a CSS selector for the component.
+</li></ul>
+<p>Every component requires a CSS selector. A selector instructs Angular to instantiate this component wherever it finds the corresponding tag in template HTML. For example, consider a component <code>hello-world.component.ts</code> that defines its selector as <code>app-hello-world</code>.</p>
+<p>This selector instructs Angular to instantiate this component any time the tag <code>&lt;app-hello-world&gt;</code> appears in a template.</p>
+<p>Specify a component&#x27;s selector by adding a <code>selector</code> statement to the <code>@Component</code> decorator.</p>
+<pre><code>@Component({
+ selector: &#x27;app-hello-world&#x27;,
+})</code></pre>
+<ul><li>Define the HTML template that the component uses to display information. A template is a block of HTML that tells Angular how to render the component in your application. Define a template for your component in one of two ways: by referencing an external file, or directly within the component.
+</li></ul>
+<p>To define a template as an external file, add a <code>templateUrl</code> property to the <code>@Component</code> decorator.</p>
+<pre><code>@Component({
+ selector: &#x27;app-hello-world&#x27;,
+ templateUrl: &#x27;./hello-world.component.html&#x27;,
+})</code></pre>
+<p>To define a template within the component, add a <code>template</code> property to the <code>@Component</code> decorator that contains the HTML you want to use.</p>
+<pre><code>@Component({
+ selector: &#x27;app-hello-world&#x27;,
+ template: &#x27;&lt;h1&gt;Hello World!&lt;/h1&gt;&#x27;,
+})</code></pre>
+<p>If you want your template to span multiple lines, use backticks ( ` ). For example:</p>
+<pre><code>@Component({
+ selector: &#x27;app-hello-world&#x27;,
+ template: `
+   &lt;h1&gt;Hello World!&lt;/h1&gt;
+   &lt;p&gt;This template definition spans multiple lines.&lt;/p&gt;
+ `
+})</code></pre>
+<p class="callout"><strong>NOTE</strong></p>
+<p>An Angular component requires a template defined using <code>template</code> or <code>templateUrl</code>. You cannot have both statements in a component.</p>
+<ul><li>Select the styles for the component&#x27;s template.
+</li></ul>
+<p>Declare component styles uses for its template in one of two ways: by referencing an external file, or directly within the component.</p>
+<p>To declare the styles for a component in a separate file, add a <code>styleUrls</code> property to the <code>@Component</code> decorator.</p>
+<pre><code>@Component({
+ selector: &#x27;app-hello-world&#x27;,
+ templateUrl: &#x27;./hello-world.component.html&#x27;,
+ styleUrls: [&#x27;./hello-world.component.css&#x27;]
+})</code></pre>
+<p>To declare the styles within the component, add a <code>styles</code> property to the <code>@Component</code> decorator that contains the styles you want to use.</p>
+<pre><code>@Component({
+ selector: &#x27;app-hello-world&#x27;,
+ template: &#x27;&lt;h1&gt;Hello World!&lt;/h1&gt;&#x27;,
+ styles: [&#x27;h1 { font-weight: normal; }&#x27;]
+})</code></pre>
+<p>The <code>styles</code> property takes an array of strings that contain the CSS rule declarations.</p>
+<ul><li>Add a <code>class</code> statement that includes the code for the component.
+</li></ul>
+<pre><code>export class HelloWorldComponent {}</code></pre>
+<h3><strong>Add component to Module declarations</strong></h3>
+<p>To use a component, it must be added to a module.</p>
+<p>src/app/app.module.ts</p>
+<pre><code>import { HelloWorldComponent } from &#x27;./hello.component&#x27;;
+
+@NgModule({
+ imports:      [ BrowserModule, FormsModule ],
+ declarations: [ AppComponent, HelloWorldComponent],
+ bootstrap:    [ AppComponent ]
+})</code></pre>
+<p>After that you may use your component like that:</p>
+<p>src/app/app.component.html</p>
+<pre><code>&lt;app-hello-world&gt;&lt;/app-hello-world&gt;</code></pre>
+<h3><strong>Try it out!</strong></h3>

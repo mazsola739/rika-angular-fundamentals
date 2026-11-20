@@ -1,0 +1,31 @@
+<p>Store is RxJS powered global state management for Angular applications, inspired by Redux. Store is a controlled state container designed to help write performant, consistent applications on top of Angular.</p>
+<h2><strong>Key concepts</strong></h2>
+<ul><li>Actions describe unique events that are dispatched from components and services.
+</li><li>State changes are handled by pure functions called reducers that take the current state and the latest action to compute a new state.
+</li><li>Selectors are pure functions used to select, derive and compose pieces of state.
+</li><li>State is accessed with the Store, an observable of state and an observer of actions.
+</li></ul>
+<h2><strong>Installation</strong></h2>
+<h3><strong>Installing with npm</strong></h3>
+<p>For more information on using <code>npm</code> check out the docs <a href="https://docs.npmjs.com/cli/install" target="_blank" rel="noopener noreferrer">here</a>.</p>
+<pre><code>npm install @ngrx/store --save</code></pre>
+<h3><strong>Installing with yarn</strong></h3>
+<p>For more information on using <code>yarn</code> check out the docs <a href="https://yarnpkg.com/docs/usage" target="_blank" rel="noopener noreferrer">here</a>.</p>
+<pre><code>yarn add @ngrx/store</code></pre>
+<h3><strong>Installing with ng add</strong></h3>
+<p>If your project is using the Angular CLI 6+ then you can install the Store to your project with the following <code>ng add</code> command <a href="https://angular.io/cli/add" target="_blank" rel="noopener noreferrer">(details here)</a>:</p>
+<pre><code>ng add @ngrx/store</code></pre>
+<h3><strong>Optional ng add flags</strong></h3>
+<ul><li>path - path to the module that you wish to add the import for the <code>StoreModule</code> to.
+</li><li>project - name of the project defined in your <code>angular.json</code> to help locating the module to add the <code>StoreModule</code> to.
+</li><li>module - name of file containing the module that you wish to add the import for the <code>StoreModule</code> to. Can also include the relative path to the file. For example, <code>src/app/app.module.ts</code>;
+</li><li>statePath - The file path to create the state in. By default, this is <code>reducers</code>.
+</li><li>stateInterface - The type literal of the defined interface for the state. By default, this is <code>State</code>.
+</li></ul>
+<p>This command will automate the following steps:</p>
+<ul><li>Update <code>package.json</code> &gt; <code>dependencies</code> with <code>@ngrx/store</code>.
+</li><li>Run <code>npm install</code> to install those dependencies.
+</li><li>Create a <code>src/app/reducers</code> folder, unless the <code>statePath</code> flag is provided, in which case this would be created based on the flag.
+</li><li>Create a <code>src/app/reducers/index.ts</code> file with an empty State interface, an empty <code>reducers</code> map, and an empty <code>metaReducers</code> array. This may be created under a different directory if the <code>statePath</code> flag is provided.
+</li><li>Update your <code>src/app/app.module.ts</code> &gt; <code>imports</code> array with <code>StoreModule.forRoot(reducers, { metaReducers })</code>. If you provided flags then the command will attempt to locate and update module found by the flags.
+</li></ul>

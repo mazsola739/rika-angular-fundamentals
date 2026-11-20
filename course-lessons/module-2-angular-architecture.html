@@ -1,0 +1,40 @@
+<p class="callout"><strong>INFO</strong></p>
+<h3><strong>Original article: </strong><a href="https://angular.io/guide/architecture" target="_blank" rel="noopener noreferrer"><strong>Introduction to Angular concepts</strong></a><strong>.</strong></h3>
+<p><img src="course-lessons/img/image14.webp" alt="Angular Architecture"></p>
+<p>The architecture of an Angular application relies on certain fundamental concepts.</p>
+<h3><strong>Components</strong></h3>
+<p>The basic building blocks of the Angular framework are <em>Angular components</em> that are organized into <code>NgModules</code>. Every Angular application has at least one component, the <em>root component</em> that connects a component hierarchy with the page document object model (DOM). Each component defines a class that contains application data and logic, and is associated with an HTML template that defines a view to be displayed in a target environment.</p>
+<ul><li>Components define views, which are sets of screen elements that Angular can choose among and modify according to your program logic and data.
+</li><li>Components use services, which provide specific functionality not directly related to views. Service providers can be injected into components as dependencies, making your code modular, reusable, and efficient.
+</li></ul>
+<p class="callout"><strong>NOTE</strong></p>
+<p>Modules, components and services are classes that use decorators. These decorators mark their type and provide <em>metadata</em> that tells Angular how to use them.</p>
+<p>The <code>@Component()</code> decorator identifies the class immediately below it as a component, and provides the template and related component-specific <em>metadata</em>.</p>
+<p><em>The metadata</em> for a component class associates it with a template that defines a view. A template combines ordinary HTML with Angular directives and binding markup that allow Angular to modify the HTML before rendering it for display.</p>
+<h3><strong>Modules</strong></h3>
+<p>Angular <code>NgModules</code> differ from and complement JavaScript (ES2015) modules. An <code>NgModule</code> declares a compilation context for a set of components that is dedicated to an application domain, a workflow, or a closely related set of capabilities. An <code>NgModule</code> can associate its components with related code, such as services, to form functional units.</p>
+<p>Every Angular application has a <em>root module</em>, conventionally named <code>AppModule</code>, which provides the bootstrap mechanism that launches the application. An application typically contains many functional modules.</p>
+<p>Like JavaScript modules, <code>NgModules</code> can import functionality from other <code>NgModules</code>, and allow their own functionality to be exported and used by other <code>NgModules</code>. For example, to use the router service in your app, you import the <em>Router</em> <code>NgModule</code>.</p>
+<p>Organizing your code into distinct functional modules helps in managing development of complex applications, and in designing for reusability. In addition, this technique lets you take advantage of <em>lazy-loading</em> — that is, loading modules on demand—to minimize the amount of code that needs to be loaded at startup.</p>
+<h3><strong>Templates, directives, pipes and data binding</strong></h3>
+<p>A <em>template</em> combines HTML with Angular markup that can modify HTML elements before they are displayed. Template <em>directives</em> provide program logic, and binding markup connects your application data and the DOM.</p>
+<p>There are two types of data binding:</p>
+<ul><li><em>Event binding</em> lets your application respond to user input in the target environment by updating your application data.
+</li><li><em>Property binding</em> lets you interpolate values that are computed from your application data into the HTML.
+</li></ul>
+<p>Before a view is displayed, Angular evaluates the <em>directives</em> and resolves the binding syntax in the template to modify the HTML elements and the DOM, according to your program data and logic. Angular supports <em>two-way data binding</em>, meaning that changes in the DOM, such as user choices, are also reflected in your program data.</p>
+<p>Your templates can use <em>pipes</em> to improve the user experience by transforming values for display. For example, use pipes to display dates and currency values that are appropriate for a user&#x27;s locale. Angular provides predefined pipes for common transformations, and you can also define your own pipes.</p>
+<h3><strong>Metadata</strong></h3>
+<p><em>Metadata</em> tells Angular how to process a class. It is used to decorate the class so that it can configure the expected behavior of a class.</p>
+<h3><strong>Services and Dependency Injection</strong></h3>
+<p>For data or logic that isn&#x27;t associated with a specific view, and that you want to share across components, you create a <em>service class</em>. A <em>service class</em> definition is immediately preceded by the <code>@Injectable()</code> decorator. The decorator provides the metadata that allows other providers to be injected as dependencies into your class.</p>
+<p class="callout"><strong>NOTE</strong></p>
+<p>The metadata for a service class provides the information Angular needs to make it available to components through dependency injection (DI).</p>
+<p><em>Dependency injection (DI)</em> lets you keep your component classes lean and efficient. They don&#x27;t fetch data from the server, validate user input, or log directly to the console; they delegate such tasks to services.</p>
+<h3><strong>Routing</strong></h3>
+<p>An application&#x27;s components typically define many views, arranged hierarchically. The Angular <code>Router NgModule</code> provides a service that lets you define a navigation path among the different application states and view hierarchies in your application.</p>
+<p>It is modeled on the familiar browser navigation conventions:</p>
+<ul><li>Enter a URL in the address bar and the browser navigates to a corresponding page.
+</li><li>Click links on the page and the browser navigates to a new page.
+</li><li>Click the browser&#x27;s back and forward buttons and the browser navigates backward and forward through the history of pages you&#x27;ve seen.
+</li></ul>

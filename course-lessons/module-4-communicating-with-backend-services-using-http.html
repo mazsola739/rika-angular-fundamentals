@@ -1,0 +1,114 @@
+<p class="callout"><strong>VIDEO</strong></p>
+<h2><strong>Watch videos:</strong></h2>
+<p><a href="https://www.linkedin.com/learning/angular-essential-training-2/the-angular-httpclient" target="_blank" rel="noopener noreferrer"><strong>1. Angular Http Client</strong></a></p>
+<p><a href="https://www.linkedin.com/learning/angular-essential-training-2/using-a-mock-backend-for-http-calls" target="_blank" rel="noopener noreferrer"><strong>2. Using a mock backend for http calls</strong></a></p>
+<p><a href="https://www.linkedin.com/learning/angular-essential-training-2/using-the-httpclient-for-get-calls" target="_blank" rel="noopener noreferrer"><strong>3. Using the HttpClient for GET calls</strong></a></p>
+<p><a href="https://www.linkedin.com/learning/angular-essential-training-2/using-search-params-in-get-calls" target="_blank" rel="noopener noreferrer"><strong>4. Using search params in GET calls</strong></a></p>
+<p><a href="https://www.linkedin.com/learning/angular-essential-training-2/use-httpclient-for-post-put-and-delete-calls" target="_blank" rel="noopener noreferrer"><strong>5. Use Http Client for POST PUT DELETE calls</strong></a></p>
+<p><a href="https://www.linkedin.com/learning/angular-essential-training-2/handling-http-errors" target="_blank" rel="noopener noreferrer"><strong>6. Handling Http errors</strong></a></p>
+<p>Most front-end applications need to communicate with a server over the HTTP protocol, to download or upload data and access other back-end services. Angular provides a client HTTP API for Angular applications, the <code>HttpClient</code> service class in <code>@angular/common/http</code>.</p>
+<p>The HTTP client service offers the following major features.</p>
+<ul><li>The ability to request typed response objects.
+</li><li>Streamlined error handling.
+</li><li>Testability features.
+</li><li>Request and response <a href="https://angular.io/guide/http#intercepting-requests-and-responses" target="_blank" rel="noopener noreferrer">interception</a>.
+</li></ul>
+<h3><strong>Setup for server communication</strong></h3>
+<p>Before you can use <code>HttpClient</code>, you need to import the Angular <code>HttpClientModule</code>. Most apps do so in the root <code>AppModule</code>.</p>
+<p>app.module.ts</p>
+<pre><code>import { NgModule } from &#x27;@angular/core&#x27;;
+import { BrowserModule } from &#x27;@angular/platform-browser&#x27;;
+import { HttpClientModule } from &#x27;@angular/common/http&#x27;;
+
+@NgModule({
+ imports: [
+   BrowserModule,
+   // import HttpClientModule after BrowserModule.
+   HttpClientModule,
+ ],
+ declarations: [
+   AppComponent,
+ ],
+ bootstrap: [ AppComponent ]
+})
+export class AppModule {}</code></pre>
+<p>You can then inject the <code>HttpClient</code> service as a dependency of an application class, as shown in the following <code>ConfigService</code> example.</p>
+<p>config.service.ts</p>
+<pre><code>import { Injectable } from &#x27;@angular/core&#x27;;
+import { HttpClient } from &#x27;@angular/common/http&#x27;;
+
+@Injectable()
+export class ConfigService {
+ constructor(private http: HttpClient) { }
+}</code></pre>
+<p>The <code>HttpClient</code> service makes use of <code>observables</code> for all transactions. You must import the <code>RxJS observable</code> and operator symbols that appear in the example snippets. These ConfigService imports are typical.</p>
+<p>config.service.ts(imports)</p>
+<pre><code>import { Observable, throwError } from &#x27;rxjs&#x27;;
+import { catchError, retry } from &#x27;rxjs/operators&#x27;;</code></pre>
+<p>If you peek inside the type definition file <code>@angular/common/http/src/client.d.ts</code>, you’ll see that <code>get()</code>, <code>post()</code>, <code>put()</code>, <code>delete()</code>, and many other methods return an <code>Observable</code>, and an app needs to subscribe to get the data. To use the <code>HttpClient</code> service, you need to inject it into a service or component.</p>
+<h3><strong>Requesting data from a server</strong></h3>
+<h4><strong>Example of an HTTP GET</strong></h4>
+<pre><code>interface Product {
+    id: number,
+   title: string
+}
+...
+constructor(private httpClient: HttpClient) { }
+
+ngOnInit(): void {
+ this.httpClient.get&lt;Product&gt;(&#x27;/product/123&#x27;)
+      .subscribe(
+       data =&gt; console.log(`id: ${data.id} title: ${data.title}`),
+        (err: HttpErrorResponse) =&gt; console.log(`Got error: ${err}`)
+      );
+}</code></pre>
+<p>In the <code>get()</code> method, you haven’t specified the full URL (such as <strong>http://localhost:8000/product</strong>) assuming that the Angular app makes a request to the same server where it was deployed, so the base portion of the URL can be omitted. Note that in <code>get&lt;Product&gt;()</code>, you use <a href="https://www.typescriptlang.org/docs/handbook/2/generics.html" target="_blank" rel="noopener noreferrer"><strong>TypeScript generics</strong></a> to specify the type of data expected in the body of the HTTP response.</p>
+<p>Your <code>subscribe()</code> method receives and prints the data on the browser’s console. By default, <code>HttpClient</code> expects the data in <code>JSON</code> format, and the data is automatically converted into JavaScript objects. If you expect non-JSON data, use the <code>responseType</code> option.</p>
+<h3><strong>Reading a JSON file with HttpClient</strong></h3>
+<p>Let&#x27;s imagine you have a json data you need to display in your component.</p>
+<p>data.json</p>
+<pre><code>[
+ { &quot;id&quot;: 0, &quot;title&quot;: &quot;First Product&quot;, &quot;price&quot;: 24.99 },
+ { &quot;id&quot;: 1, &quot;title&quot;: &quot;Second Product&quot;, &quot;price&quot;: 64.99 },
+ { &quot;id&quot;: 2, &quot;title&quot;: &quot;Third Product&quot;, &quot;price&quot;: 74.99}
+]</code></pre>
+<p>Your app component will use H<code>ttpClient.get()</code> to make an HTTP GET request, and you’ll declare a Product interface defining the structure of the expected product data. The observable returned by <code>get()</code> will be unwrapped in the template by the async pipe. The app.component.ts file is located in the readfile folder and has the content shown in the following listing.</p>
+<pre><code>interface Product {
+  id: string;
+ title: string;
+ price: number;
+}
+
+@Component({
+ selector: &#x27;app-root&#x27;,
+ template: `&lt;h1&gt;Products&lt;/h1&gt;
+ &lt;ul&gt;
+   &lt;li *ngFor=&quot;let product of products$ | async&quot;&gt;
+      {{product.title }}: {{product.price | currency}}
+    &lt;/li&gt;
+ &lt;/ul&gt;
+ `})
+export class AppComponent{
+
+ products$: Observable&lt;Product[]&gt;;
+
+ constructor(private httpClient: HttpClient) {
+    this.products$ = this.httpClient
+                        .get&lt;Product[]&gt;(&#x27;/data/products.json&#x27;);
+  }
+}</code></pre>
+<h3><strong>Adding HTTP headers and query parameters to the GET request</strong></h3>
+<p>There are some cases when we need to add some parameters to a request. The most common use case is <code>Authorization</code> token. To add these parameters to your request you need define <code>HttpHeaders</code> or <code>HttpParams</code> and pass them as parameters to <code>get</code> or <code>post</code> or etc.</p>
+<pre><code>constructor(private httpClient: HttpClient) {
+   let httpHeaders = new HttpHeaders()
+      .set(&#x27;Content-Type&#x27;, &#x27;application/json&#x27;)
+      .set(&#x27;Authorization&#x27;, &#x27;Basic QWxhZGRpb&#x27;);
+
+   let httpParams = new HttpParams()
+      .set(&#x27;title&#x27;, &quot;First&quot;);
+
+   this.products$ = this.httpClient.get&lt;Product[]&gt;(&#x27;/data/products.json&#x27;,
+     {
+      headers: httpHeaders,
+     params: httpParams
+   });</code></pre>

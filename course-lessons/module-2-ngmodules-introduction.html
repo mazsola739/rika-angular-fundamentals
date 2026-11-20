@@ -1,0 +1,119 @@
+<p class="callout"><strong>INFO</strong></p>
+<h3><strong>Original article: </strong><a href="https://angular.io/guide/ngmodules" target="_blank" rel="noopener noreferrer"><strong>Modules Introduction</strong></a><strong>.</strong></h3>
+<p class="callout"><strong>VIDEO</strong></p>
+<h3><strong>Watch a video on this topic </strong><a href="https://www.linkedin.com/learning/angular-essential-training-2/ngmodule-and-the-root-module" target="_blank" rel="noopener noreferrer"><strong>NgModule and the root module</strong></a></h3>
+<h3><strong>Angular modularity</strong></h3>
+<p>Modules are a great way to organize an application and extend it with capabilities from external libraries.</p>
+<p>Angular libraries are <em>NgModules</em>, such as <a href="https://angular.io/api/forms/FormsModule" target="_blank" rel="noopener noreferrer">FormsModule</a>, <a href="https://angular.io/api/common/http/HttpClientModule" target="_blank" rel="noopener noreferrer">HttpClientModule</a>, and <a href="https://angular.io/api/router/RouterModule" target="_blank" rel="noopener noreferrer">RouterModule</a>. Many third-party libraries are available as <em>NgModules</em> such as <a href="https://material.angular.io/" target="_blank" rel="noopener noreferrer">Material Design</a>, <a href="https://ionicframework.com/" target="_blank" rel="noopener noreferrer">Ionic</a>, and <a href="https://github.com/angular/angularfire2" target="_blank" rel="noopener noreferrer">AngularFire</a>.</p>
+<p><em>NgModules</em> consolidate components, directives, and pipes into cohesive blocks of functionality, each focused on a feature area, application business domain, workflow, or common collection of utilities.</p>
+<p>Modules can also add services to the application. Such services might be internally developed, like something you&#x27;d develop yourself or come from outside sources, such as the Angular router and HTTP client.</p>
+<p>Modules can be loaded eagerly when the application starts or lazy loaded asynchronously by the router.</p>
+<p><em>NgModule</em> metadata does the following:</p>
+<ul><li>Declares which components, directives, and pipes belong to the module.
+</li><li>Makes some of those components, directives, and pipes public so that other module&#x27;s component templates can use them.
+</li><li>Imports other modules with the components, directives, and pipes that components in the current module need.
+</li><li>Provides services that other application components can use.
+</li></ul>
+<p>Every Angular application has at least one module, the root module. You <a href="https://angular.io/guide/bootstrapping" target="_blank" rel="noopener noreferrer">bootstrap</a> that module to launch the application.</p>
+<p>The <em>root module</em> is all you need in an application with few components. As the application grows, you refactor the root module into <a href="https://angular.io/guide/feature-modules" target="_blank" rel="noopener noreferrer">feature modules</a> that represent collections of related functionality. You then import these modules into the <em>root module</em>.</p>
+<h3><strong>NgModules</strong></h3>
+<p><em>NgModules</em> configure the injector and the compiler and help organize related things together.</p>
+<p>An NgModule is a class marked by the <code>@NgModule</code> decorator. <code>@NgModule</code> takes a metadata object that describes how to compile a component&#x27;s template and how to create an injector at runtime. It identifies the module&#x27;s own components, directives, and pipes, making some of them public, through the exports property, so that external components can use them. <code>@NgModule</code> can also add service providers to the application dependency injectors.</p>
+<h3><strong>The basic NgModule</strong></h3>
+<p>The Angular CLI generates the following basic <code>AppModule</code> when creating a new application.</p>
+<p>src/app/app.module.ts (default AppModule)</p>
+<pre><code>// imports
+import { BrowserModule } from &quot;@angular/platform-browser&quot;;
+import { NgModule } from &quot;@angular/core&quot;;
+
+import { AppComponent } from &quot;./app.component&quot;;
+
+// @NgModule decorator with its metadata
+@NgModule({
+ declarations: [AppComponent],
+ imports: [BrowserModule],
+ providers: [],
+ bootstrap: [AppComponent],
+})
+export class AppModule {}</code></pre>
+<p>The <code>@NgModule</code> decorator identifies <code>AppModule</code> as an <em>NgModule</em> class. <code>@NgModule</code> takes a metadata object that tells Angular how to compile and launch the application.</p>
+<h3><strong>The declarations array</strong></h3>
+<p>The module&#x27;s <code>declarations</code> array tells Angular which components belong to that module. As you create more components, add them to <code>declarations</code>.</p>
+<p>You must declare every component in exactly one <code>NgModule</code> class. If you use a component without declaring it, Angular returns an error message.</p>
+<p>The <code>declarations</code> array only takes declarables. Declarables are components, directives and pipes. All of a module&#x27;s declarables must be in the <code>declarations</code> array. Declarables must belong to exactly one module. The compiler emits an error if you try to declare the same class in more than one module.</p>
+<p>These declared classes are visible within the module but invisible to components in a different module unless they are exported from this module and the other module imports this one.</p>
+<p>An example of what goes into a declarations array follows:</p>
+<pre><code>declarations: [
+ YourComponent,
+ YourPipe,
+ YourDirective
+],</code></pre>
+<p>A declarable can only belong to one module, so only declare it in one <code>@NgModule</code>. When you need it elsewhere, import the module that has the declarable you need in it.</p>
+<h3><strong>Using custom components with </strong><code><strong>@NgModule</strong></code></h3>
+<p>To use a directive, component, or pipe in a module, you must do a few things:</p>
+<ul><li>Export it from the file where you wrote it.
+</li><li>Import it into the appropriate module.
+</li><li>Declare it in the @NgModule declarations array.
+</li></ul>
+<p>Those three steps look like the following. In the file where you create your component, export it. The following example, named <code>helloComponent</code> is the default component structure that the CLI generates in its own file, <code>hello.component.ts</code></p>
+<p>src/app/hello.component.ts</p>
+<pre><code>import { Component } from &quot;@angular/core&quot;;
+
+@Component({
+ selector: &quot;hello&quot;,
+ template: &quot;&lt;h1&gt;Hello World&lt;/h1&gt;&quot;,
+})
+export class HelloComponent {}</code></pre>
+<p>The key point here is that you have to export it so you can import it elsewhere. Next, import it into the <code>NgModule</code>, in this example app.module.ts, with a JavaScript import statement:</p>
+<p>src/app/app.module.ts</p>
+<pre><code>import { HelloComponent } from &quot;./hello.component&quot;;</code></pre>
+<p>And in the same file, add it to the <code>@NgModule</code> <code>declarations</code> array:</p>
+<p>src/app/app.module.ts</p>
+<pre><code>declarations: [AppComponent, HelloComponent],</code></pre>
+<p>Now you could use your <code>HelloComponent</code> .</p>
+<h3><strong>The imports array</strong></h3>
+<p>The module&#x27;s <code>imports</code> array appears exclusively in the <code>@NgModule</code> metadata object. It tells Angular about other <em>NgModules</em> that this particular module needs to function properly.</p>
+<pre><code>imports: [
+ BrowserModule,
+ FormsModule,
+ HttpClientModule
+],</code></pre>
+<p>This list of modules are those that export components, directives, or pipes that component templates in this module reference. In this case, the component is <code>AppComponent</code>, which references components, directives, or pipes in <code>BrowserModule</code>, <code>FormsModule</code> or <code>HttpClientModule</code>. A component template can reference another component, directive, or pipe when the referenced class is declared in this module or the class was imported from another module.</p>
+<h3><strong>The providers array</strong></h3>
+<p>The providers array is where you list the services the application needs. When you list services here, they are available app-wide. You can scope them when using <em>feature modules</em> and <em>lazy loading</em>. For more information, see <a href="https://angular.io/guide/providers" target="_blank" rel="noopener noreferrer">Providers</a>.</p>
+<h3><strong>The bootstrap array</strong></h3>
+<p>The application launches by bootstrapping the root <code>AppModule</code>, which is also referred to as an <code>entryComponent</code>. Among other things, the bootstrapping process creates the component(s) listed in the <code>bootstrap</code> array and inserts each one into the browser DOM.</p>
+<p>Each bootstrapped component is the base of its own tree of components. Inserting a bootstrapped component usually triggers a cascade of component creations that fill out that tree.</p>
+<p>While you can put more than one component tree on a host web page, most applications have only one component tree and bootstrap a single root component.</p>
+<p>This one root component is usually called <code>AppComponent</code> and is in the root module&#x27;s <code>bootstrap</code> array.</p>
+<h3><strong>Sharing modules</strong></h3>
+<p>Creating shared modules allows you to organize and streamline your code. You can put commonly used directives, pipes, and components into one module and then import just that module wherever you need it in other parts of your application.</p>
+<p>Consider the following module from an imaginary app:</p>
+<pre><code>import { CommonModule } from &quot;@angular/common&quot;;
+import { NgModule } from &quot;@angular/core&quot;;
+import { FormsModule } from &quot;@angular/forms&quot;;
+import { CustomerComponent } from &quot;./customer.component&quot;;
+import { NewItemDirective } from &quot;./new-item.directive&quot;;
+import { OrdersPipe } from &quot;./orders.pipe&quot;;
+
+@NgModule({
+ imports: [CommonModule],
+ declarations: [CustomerComponent, NewItemDirective, OrdersPipe],
+ exports: [
+   CustomerComponent,
+   NewItemDirective,
+   OrdersPipe,
+   CommonModule,
+   FormsModule,
+ ],
+})
+export class SharedModule {}</code></pre>
+<p class="callout"><strong>NOTE</strong></p>
+<p>Note the following:</p>
+<ul><li>It imports the <code>CommonModule</code> because the module&#x27;s component needs common directives.
+</li><li>It declares and exports the utility pipe, directive, and component classes.
+</li><li>It re-exports the <code>CommonModule</code> and <code>FormsModule</code>.
+</li></ul>
+<p>By re-exporting <code>CommonModule</code> and <code>FormsModule</code>, any other module that imports this SharedModule, gets access to directives like <code>NgIf</code> and <code>NgFor</code> from <code>CommonModule</code> and can bind to component properties with <code>[(ngModel)]</code>, a directive in the <code>FormsModule</code>.</p>
+<p>Even though the components declared by <code>SharedModule</code> might not bind with <code>[(ngModel)]</code> and there may be no need for <code>SharedModule</code> to import <code>FormsModule</code>, SharedModule can still export <code>FormsModule</code> without listing it among its <code>imports</code>. This way, you can give other modules access to <code>FormsModule</code> without having to import it directly into the <code>@NgModule</code> decorator.</p>
+<h3><strong>Try it out!</strong></h3>

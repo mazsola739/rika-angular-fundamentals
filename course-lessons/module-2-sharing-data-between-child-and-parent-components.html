@@ -1,0 +1,121 @@
+<p class="callout"><strong>INFO</strong></p>
+<h3><strong>Original article: </strong><a href="https://angular.io/guide/inputs-outputs" target="_blank" rel="noopener noreferrer"><strong>Sharing data between child and parent directives and components</strong></a><strong>.</strong></h3>
+<p class="callout"><strong>VIDEO</strong></p>
+<h3><strong>Watch a video on these topics:</strong></h3>
+<p><a href="https://www.linkedin.com/learning/angular-essential-training-2/getting-data-to-the-component-with-input" target="_blank" rel="noopener noreferrer">1. Getting data to the component with @Input</a></p>
+<p><a href="https://www.linkedin.com/learning/angular-essential-training-2/subscribing-to-component-events-with-output" target="_blank" rel="noopener noreferrer">2. Subscribing to component events with @Output</a></p>
+<p>A common pattern in Angular is sharing data between a parent component and one or more child components. Implement this pattern with the <code>@Input()</code> and <code>@Output()</code> decorators.</p>
+<p>Consider the following hierarchy:</p>
+<pre><code>&lt;parent-component&gt;
+ &lt;child-component&gt;&lt;/child-component&gt;
+&lt;/parent-component&gt;</code></pre>
+<p>The <code>&lt;parent-component&gt;</code> serves as the context for the <code>&lt;child-component&gt;</code>.</p>
+<p><code>@Input()</code> and <code>@Output()</code> give a child component a way to communicate with its parent component. <code>@Input()</code> lets a parent component update data in the child component. Conversely, <code>@Output()</code> lets the child send data to a parent component.</p>
+<h2><strong>Sending data to a child component</strong></h2>
+<p>The <code>@Input()</code> decorator in a child component or directive signifies that the property can receive its value from its parent component.</p>
+<p><img src="course-lessons/img/image6.webp" alt="Sending data to a child component"></p>
+<p>To use <code>@Input()</code>, you must configure the parent and child.</p>
+<h3><strong>Configuring the child component</strong></h3>
+<p>To use the <code>@Input()</code> decorator in a child component class, first import <code>Input</code> and then decorate the property with <code>@Input()</code>, as in the following example.</p>
+<p>src/app/item-detail/item-detail.component.ts</p>
+<pre><code>import { Component, Input } from &quot;@angular/core&quot;; // First, import Input
+export class ItemDetailComponent {
+ @Input() item = &quot;&quot;; // decorate the property with @Input()
+}</code></pre>
+<p>In this case, <code>@Input()</code> decorates the property item, which has a type of string, however, <code>@Input()</code> properties can have any type, such as number, string, boolean, or object. The value for item comes from the parent component.</p>
+<p>Next, in the child component template, add the following:</p>
+<p>src/app/item-detail/item-detail.component.html</p>
+<pre><code>&lt;div&gt;Today&#x27;s item: &lt;span style=&quot;fontWeight: bold&quot;&gt;{{ item }}&lt;/span&gt;&lt;/div&gt;</code></pre>
+<h3><strong>Configuring the parent component</strong></h3>
+<p>The next step is to bind the property in the parent component&#x27;s template. In this example, the parent component template is <code>app.component.html</code>.</p>
+<ul><li>Use the child&#x27;s selector, here <code>&lt;app-item-detail&gt;</code>, as a directive within the parent component template.
+</li><li>Use property binding to bind the <code>item</code> property in the child to the <code>currentItem</code> property of the parent.
+</li></ul>
+<p>src/app/app.component.html</p>
+<pre><code>&lt;app-item-detail [item]=&quot;currentItem&quot;&gt;&lt;/app-item-detail&gt;</code></pre>
+<ul><li>In the parent component class, designate a value for <code>currentItem</code>:
+</li></ul>
+<p>src/app/app.component.ts</p>
+<pre><code>export class AppComponent {
+ currentItem = &quot;Television&quot;;
+}</code></pre>
+<p>With <code>@Input()</code>, Angular passes the value for currentItem to the child so that item renders as <strong>Television</strong>.</p>
+<p>The following diagram shows this structure:</p>
+<p><img src="course-lessons/img/image6.webp" alt="Sending data to a child component"></p>
+<p>The target in the square brackets, <code>[]</code>, is the property you decorate with <code>@Input()</code> in the child component. The binding source, the part to the right of the equal sign, is the data that the parent component passes to the nested component.</p>
+<p class="callout"><strong>NOTE</strong></p>
+<p>To watch for changes on an <code>@Input()</code> property, use <em>OnChanges</em>, one of Angular&#x27;s lifecycle hooks. See the <em>OnChanges</em> section of the <strong>Lifecycle Hooks</strong> guide for more details and examples.</p>
+<h2><strong>Sending data to a parent component</strong></h2>
+<p>The <code>@Output()</code> decorator in a child component or directive lets data flow from the child to the parent.</p>
+<p><img src="course-lessons/img/image6.webp" alt="Sending data to a parent component"></p>
+<p><code>@Output()</code> marks a property in a child component as a doorway through which data can travel from the child to the parent.</p>
+<p>The child component uses the <code>@Output()</code> property to raise an event to notify the parent of the change. To raise an event, an <code>@Output()</code> must have the type of <code>EventEmitter</code>, which is a class in <code>@angular/core</code> that you use to emit custom events.</p>
+<p>The following example shows how to set up an <code>@Output()</code> in a child component that pushes data from an HTML <code>&lt;input&gt;</code> to an array in the parent component.</p>
+<p>To use <code>@Output()</code>, you must configure the parent and child.</p>
+<h3><strong>Configuring the child component</strong></h3>
+<p>The following example features an <code>&lt;input&gt;</code> where a user can enter a value and click a <code>&lt;button&gt;</code> that raises an event. The <code>EventEmitter</code> then relays the data to the parent component.</p>
+<ul><li>Import <code>Output</code> and <code>EventEmitter</code> in the child component class:
+</li></ul>
+<pre><code>import { Output, EventEmitter } from &quot;@angular/core&quot;;</code></pre>
+<ul><li>In the component class, decorate a property with <code>@Output()</code>. The following example <code>newItemEvent</code> <code>@Output()</code> has a type of <code>EventEmitter</code>, which means it&#x27;s an event.
+</li></ul>
+<p>src/app/item-output/item-output.component.ts</p>
+<pre><code>@Output() newItemEvent = new EventEmitter&lt;string&gt;();</code></pre>
+<p>The different parts of the preceding declaration are as follows:</p>
+<ul><li><code>@Output()</code> — a decorator function marking the property as a way for data to go from the child to the parent
+</li><li><code>newItemEvent</code> — the name of the <code>@Output()</code>
+</li><li><code>EventEmitter&lt;string&gt;</code> — the <code>@Output()&#x27;s</code> type
+</li><li><code>new EventEmitter&lt;string&gt;()</code> — tells Angular to create a new event emitter and that the data it emits is of type string.
+</li><li>Create an <code>addNewItem()</code> method in the same component class:
+</li></ul>
+<p>src/app/item-output/item-output.component.ts</p>
+<pre><code>export class ItemOutputComponent {
+
+ @Output() newItemEvent = new EventEmitter&lt;string&gt;();
+
+ addNewItem(value: string) {
+   this.newItemEvent.emit(value);
+ }
+}</code></pre>
+<p>The <code>addNewItem()</code> function uses the <code>@Output()</code>, <code>newItemEvent</code>, to raise an event with the value the user types into the <code>&lt;input&gt;</code>.</p>
+<h3><strong>Configuring the child&#x27;s template</strong></h3>
+<p>The child&#x27;s template has two controls. The first is an HTML <code>&lt;input&gt;</code> with a <a href="https://angular.io/guide/template-reference-variables" target="_blank" rel="noopener noreferrer">Template reference variable</a>, <code>#newItem</code>, where the user types in an item name. The <code>value</code> property of the <code>#newItem</code> variable stores what the user types into the <code>&lt;input&gt;</code>.</p>
+<p>src/app/item-output/item-output.component.html</p>
+<pre><code>&lt;label for=&quot;item-input&quot;&gt;Add an item:&lt;/label&gt;
+&lt;input type=&quot;text&quot; id=&quot;item-input&quot; #newItem /&gt;
+&lt;button type=&quot;button&quot; (click)=&quot;addNewItem(newItem.value)&quot;&gt;
+ Add to parent&#x27;s list
+&lt;/button&gt;</code></pre>
+<p>The second element is a <code>&lt;button&gt;</code> with a <code>click</code> <a href="https://angular.io/guide/event-binding" target="_blank" rel="noopener noreferrer">event binding</a>.</p>
+<p>The <code>(click)</code> event is bound to the <code>addNewItem()</code> method in the child component class. The <code>addNewItem()</code> method takes as its argument the value of the <code>#newItem.value</code> property.</p>
+<h3><strong>Configuring the parent component</strong></h3>
+<p>The <code>AppComponent</code> in this example features a list of <code>items</code> in an array and a method for adding more items to the array.</p>
+<p>src/app/app.component.ts</p>
+<pre><code>export class AppComponent {
+ items = [&quot;item1&quot;, &quot;item2&quot;, &quot;item3&quot;, &quot;item4&quot;];
+
+ addItem(newItem: string) {
+   this.items.push(newItem);
+ }
+}</code></pre>
+<p>The <code>addItem()</code> method takes an argument in the form of a string and then adds that string to the <code>items</code> array.</p>
+<h3><strong>Configuring the parent&#x27;s template</strong></h3>
+<ul><li>In the parent&#x27;s template, bind the parent&#x27;s method to the child&#x27;s event.
+</li><li>Put the child selector, here <code>&lt;app-item-output&gt;</code>, within the parent component&#x27;s template, <code>app.component.html</code>.
+</li></ul>
+<p>src/app/app.component.html</p>
+<pre><code>&lt;app-item-output (newItemEvent)=&quot;addItem($event)&quot;&gt;&lt;/app-item-output&gt;</code></pre>
+<p>The event binding, <code>(newItemEvent)=&#x27;addItem($event)&#x27;</code>, connects the event in the child, <code>newItemEvent</code>, to the method in the parent, <code>addItem()</code>. The <code>$event</code> contains the data that the user types into the <code>&lt;input&gt;</code> in the child template UI. To see the <code>@Output()</code> working, add the following to the parent&#x27;s template:</p>
+<pre><code>&lt;ul&gt;
+ &lt;li *ngFor=&quot;let item of items&quot;&gt;{{item}}&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+<p>The <code>*ngFor</code> iterates over the items in the <code>items</code> array. When you enter a value in the child&#x27;s <code>&lt;input&gt;</code> and click the button, the child emits the event and the parent&#x27;s <code>addItem()</code> method pushes the value to the <code>items</code> array and new item renders in the list.</p>
+<h2><strong>Using @Input() and @Output() together</strong></h2>
+<p>Use <code>@Input()</code> and <code>@Output()</code> on the same child component as follows:</p>
+<pre><code>&lt;app-input-output [item]=&quot;currentItem&quot; (deleteRequest)=&quot;crossOffItem($event)&quot;&gt;
+&lt;/app-input-output&gt;</code></pre>
+<p>The target, <code>item</code>, which is an <code>@Input()</code> property in the child component class, receives its value from the parent&#x27;s property, <code>currentItem</code>. When you click delete, the child component raises an event, deleteRequest, which is the argument for the parent&#x27;s <code>crossOffItem()</code> method.</p>
+<p>The following diagram shows the different parts of the <code>@Input()</code> and <code>@Output()</code> on the <code>&lt;app-input-output&gt;</code> child component.</p>
+<p><img src="course-lessons/img/image6.webp" alt="Input-Output"></p>
+<p>The child selector is <code>&lt;app-input-output&gt;</code> with item and deleteRequest being <code>@Input()</code> and <code>@Output()</code> properties in the child component class. The property <code>currentItem</code> and the method <code>crossOffItem()</code> are both in the parent component class.</p>
+<h2><strong>Try it out!</strong></h2>

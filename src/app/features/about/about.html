@@ -57,6 +57,29 @@
     </table>
   </div>
 
+  <h2>The lessons</h2>
+  <p>
+    Every module began with lessons, and the task came after them. They are here as the course
+    material had them, a page each.
+  </p>
+  <div class="lessons">
+    @for (item of lessons; track item.module) {
+      <details>
+        <summary>
+          Module {{ item.module }}: {{ item.topic }}
+          <span class="lessons__count">· {{ item.lessons.length }} lessons</span>
+        </summary>
+        <ol>
+          @for (lesson of item.lessons; track lesson.slug) {
+            <li>
+              <a [routerLink]="['/lessons', lesson.slug]">{{ lesson.title }}</a>
+            </li>
+          }
+        </ol>
+      </details>
+    }
+  </div>
+
   <h2>Try it</h2>
   <ul>
     @for (account of demoAccounts; track account.email) {
@@ -70,6 +93,7 @@
 
   <p class="links">
     <a appExternalLink [href]="repoUrl">Code on GitHub</a>
+    <a appExternalLink [href]="reactAppUrl">The same app in React</a>
     <a appExternalLink [href]="portfolioUrl">My portfolio</a>
   </p>
 </article>

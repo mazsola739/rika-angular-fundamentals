@@ -1,0 +1,133 @@
+<p class="callout"><strong>INFO</strong></p>
+<h2><strong>Original article: </strong><a href="https://angular.io/guide/component-styles" target="_blank" rel="noopener noreferrer"><strong>Component styles</strong></a><strong>.</strong></h2>
+<p class="callout"><strong>VIDEO</strong></p>
+<h2><strong>Watch a video on this topics: </strong><a href="https://www.linkedin.com/learning/angular-essential-training-2/styling-a-component" target="_blank" rel="noopener noreferrer"><strong>Styling a component</strong></a></h2>
+<p>Angular applications are styled with standard CSS. That means you can apply everything you know about CSS stylesheets, selectors, rules, and media queries directly to Angular applications.</p>
+<p>Additionally, Angular can bundle component styles with components, enabling a more modular design than regular stylesheets.</p>
+<h2><strong>Using component styles</strong></h2>
+<p>For every Angular component you write, you can define not only an HTML template, but also the CSS styles that go with that template, specifying any selectors, rules, and media queries that you need.</p>
+<p>One way to do this is to set the <code>styles</code> property in the component metadata. The <code>styles</code> property takes an array of strings that contain CSS code. Usually you give it one string, as in the following example:</p>
+<p>src/app/hero-app.component.ts</p>
+<pre><code>@Component({
+ selector: &quot;app-root&quot;,
+ template: `
+   &lt;h1&gt;Tour of Heroes&lt;/h1&gt;
+   &lt;app-hero-main [hero]=&quot;hero&quot;&gt;&lt;/app-hero-main&gt;
+ `,
+ styles: [&quot;h1 { font-weight: normal; }&quot;],
+})
+export class HeroAppComponent {
+ /* . . . */
+}</code></pre>
+<h2><strong>Special selectors</strong></h2>
+<h3><strong>:host</strong></h3>
+<p>Every component is associated within an element that matches the component&#x27;s selector. This element, into which the template is rendered, is called the <code>host element</code>. The <code>:host</code> pseudo-class selector may be used to create styles that target the host element itself, as opposed to targeting elements inside the host.</p>
+<p>src/app/host-selector-example.component.ts</p>
+<pre><code>@Component({
+ selector: &quot;app-main&quot;,
+ template: `
+   &lt;h1&gt;It Works!&lt;/h1&gt;
+   &lt;div&gt;Start editing to see some magic happen :)&lt;/div&gt;
+ `,
+})
+export class HostSelectorExampleComponent {}</code></pre>
+<p>Creating the following style will target the component&#x27;s host element. Any rule applied to this selector will affect the host element and all its descendants (in this case, italicizing all contained text).</p>
+<p>src/app/hero-details.component.css</p>
+<pre><code>:host {
+ font-style: italic;
+}</code></pre>
+<p>The <code>:host</code> selector only targets the host element of a component. Any styles within the <code>:host</code> block of a child component will not affect parent components.</p>
+<p>Use the function form to apply host styles conditionally by including another selector inside parentheses after <code>:host</code>.</p>
+<p>In this example the host&#x27;s content also becomes bold when the <code>active</code> CSS class is applied to the host element.</p>
+<p>src/app/hero-details.component.css</p>
+<pre><code>:host {
+ font-style: italic;
+}
+
+:host(.active) {
+ font-weight: bold;
+}</code></pre>
+<p>The <code>:host</code> selector can also be combined with other selectors. Add selectors behind the <code>:host</code> to select child elements, for example using <code>:host h2</code> to target all <code>&lt;h2&gt;</code> elements inside a component&#x27;s view.</p>
+<p class="callout"><strong>NOTE</strong></p>
+<p>You should not add selectors (other than <code>:host-context</code>) in front of the <code>:host</code> selector to style a component based on the outer context of the component&#x27;s view. Such selectors are not scoped to a component&#x27;s view and will select the outer context, but it&#x27;s not built-in behavior. Use <code>:host-context</code> selector for that purpose instead.</p>
+<h2><strong>Loading component styles</strong></h2>
+<p>There are several ways to add styles to a component:</p>
+<ul><li>By setting <code>styles</code> or <code>styleUrls</code> properties of metadata.
+</li><li>Inline in the template HTML.
+</li><li>With CSS imports.
+</li></ul>
+<p>The scoping rules outlined earlier apply to each of these loading patterns.</p>
+<h3><strong>Styles in component metadata</strong></h3>
+<p>Add a <code>styles</code> array property to the <code>@Component</code> decorator metadata.</p>
+<p>Each string in the array defines some CSS for this component.</p>
+<pre><code>@Component({
+ selector: &quot;app-root&quot;,
+ template: `
+   &lt;h1&gt;Tour of Heroes&lt;/h1&gt;
+   &lt;app-hero-main [hero]=&quot;hero&quot;&gt;&lt;/app-hero-main&gt;
+ `,
+ styles: [&quot;h1 { font-weight: normal; }&quot;],
+})
+export class HeroAppComponent {
+ /* . . . */
+}</code></pre>
+<p class="callout"><strong>REMINDER</strong></p>
+<p>These styles apply only to this component. They are not inherited by any components nested within the template nor by any content projected into the component.</p>
+<p>The Angular CLI command <code>ng generate component</code> defines an empty <code>styles</code> array when you create the component with the --inline-style flag.</p>
+<pre><code>ng generate component hero-app --inline-style</code></pre>
+<h3><strong>Style files in component metadata</strong></h3>
+<p>Load styles from external CSS files by adding a <code>styleUrls</code> property to a component&#x27;s <code>@Component</code> decorator:</p>
+<p>src/app/hero-app.component.ts</p>
+<pre><code>@Component({
+ selector: &quot;app-root&quot;,
+ template: `
+   &lt;h1&gt;Tour of Heroes&lt;/h1&gt;
+   &lt;app-hero-main [hero]=&quot;hero&quot;&gt;&lt;/app-hero-main&gt;
+ `,
+ styleUrls: [&quot;./hero-app.component.css&quot;],
+})
+export class HeroAppComponent {
+ /* . . . */
+}</code></pre>
+<p>src/app/hero-app.component.css</p>
+<pre><code>h1 {
+ font-weight: normal;
+}</code></pre>
+<p class="callout"><strong>NOTE</strong></p>
+<p>You can specify more than one styles file or even a combination of <code>styles</code> and <code>styleUrls</code>.</p>
+<p>When you use the Angular CLI command <code>ng generate component</code> without the <code>--inline-style</code> flag, it creates an empty styles file for you and references that file in the component&#x27;s generated <code>styleUrls</code>.</p>
+<pre><code>ng generate component hero-app</code></pre>
+<h3><strong>Template inline styles</strong></h3>
+<p>Embed CSS styles directly into the HTML template by putting them inside <code>&lt;style&gt;</code> tags.</p>
+<p>&quot;src/app/hero-controls.component.ts&#x27;</p>
+<pre><code>@Component({
+ selector: &#x27;app-hero-controls&#x27;,
+ template: `
+   &lt;style&gt;
+     button {
+       background-color: white;
+       border: 1px solid #777;
+     }
+   &lt;/style&gt;
+   &lt;h3&gt;Controls&lt;/h3&gt;
+   &lt;button type=&quot;button&quot; (click)=&quot;activate()&quot;&gt;Activate&lt;/button&gt;
+ `
+})</code></pre>
+<h3><strong>CSS </strong><code><strong>@imports</strong></code></h3>
+<p>Import CSS files into the CSS files using the standard CSS <code>@import</code> rule.</p>
+<p>In this case, the URL is relative to the CSS file into which you&#x27;re importing.</p>
+<pre><code>/* The AOT compiler needs the `./` to show that this is local */
+@import &quot;./hero-details-box.css&quot;;</code></pre>
+<h3><strong>External and global style files</strong></h3>
+<p>When building with the CLI, you have to configure the <code>angular.json</code> to include all external assets, including external style files.</p>
+<p>Register global style files in the styles section which, by default, is pre-configured with the global <code>styles.css</code> file.</p>
+<h3><strong>Non-CSS style files</strong></h3>
+<p>If you&#x27;re building with the CLI, you can write style files in <code>sass</code>, or <code>less</code>, and specify those files in the <code>@Component.styleUrls</code> metadata with the appropriate extensions (<code>.scss</code>, <code>.less</code>) as in the following example:</p>
+<pre><code>@Component({
+ selector: &#x27;app-root&#x27;,
+ templateUrl: &#x27;./app.component.html&#x27;,
+ styleUrls: [&#x27;./app.component.scss&#x27;]
+})
+...</code></pre>
+<p>The CLI build process runs the appropriate CSS preprocessor.</p>
+<p>When generating a component file with <code>ng generate component</code>, the CLI emits an empty CSS styles file (<code>.css</code>) by default.</p>

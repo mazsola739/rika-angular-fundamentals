@@ -1,0 +1,250 @@
+<p>Most apps require some sort of user input through forms. Html provides some form inputs like textfields, textareas, checkboxes, buttons and so on. Some apps require additional input types, for example: a datepicker, a userpicker or something like a counter field with a minus and plus button. We could add additional code to the form it self to make it working, but this isn’t an optional approach, we should prevent redundancy and make a reusable component. In this post I’ll use reactive forms to handle the user input. I’ll show you how to create a custom input field using Angular components and the <code>ControlValueAccessor</code> interface. In this example we will create a simple form to order drinks, this form contains a custom input that can be increased/decreased using a plus/minus button.</p>
+<p>We’re going to use the <strong>ReactiveFormsModule</strong> , you can add it to the imports section of the <code>app.module.ts</code> .</p>
+<h3><strong>Create a simple form</strong></h3>
+<p>place-order.component.html</p>
+<pre><code>&lt;form class=&quot;container&quot; [formGroup]=&quot;form&quot;&gt;
+ &lt;h1&gt;Order your drinks&lt;/h1&gt;
+
+ &lt;div class=&quot;form-control&quot;&gt;
+   &lt;label&gt;Your name: &lt;/label&gt;
+   &lt;input type=&quot;text&quot; placeholder=&quot;Your name&quot; formControlName=&quot;name&quot; /&gt;
+ &lt;/div&gt;
+ &lt;div class=&quot;form-control&quot;&gt;
+   &lt;label&gt;Amount of white wine: &lt;/label&gt;
+   &lt;input type=&quot;number&quot; formControlName=&quot;white_wine&quot; /&gt;
+ &lt;/div&gt;
+ &lt;div class=&quot;form-control&quot;&gt;
+   &lt;label&gt;Amount of red wine: &lt;/label&gt;
+   &lt;input type=&quot;number&quot; formControlName=&quot;red_wine&quot; /&gt;
+ &lt;/div&gt;
+ &lt;div class=&quot;form-control&quot;&gt;
+   &lt;label&gt;Amount of beer: &lt;/label&gt;
+   &lt;input type=&quot;number&quot; formControlName=&quot;beer&quot; /&gt;
+ &lt;/div&gt;
+ &lt;div class=&quot;form-control&quot;&gt;
+   &lt;button&gt;Place order&lt;/button&gt;
+ &lt;/div&gt;
+
+ &lt;pre class=&quot;form-values&quot;&gt;
+   {{ form.value | json }}
+ &lt;/pre&gt;
+&lt;/form&gt;</code></pre>
+<p>This form contains a few inputs to submit an order. At the bottom of our page we can use the json pipe to see what values our form contains. We have to update our <code>place-order.component.ts</code> file as well, in this file we added a factory method <strong>createForm</strong> which contains a definition of our form fields.</p>
+<p>place-order.component.ts</p>
+<pre><code>import { Component, OnInit } from &quot;@angular/core&quot;;
+import { FormGroup, FormControl } from &quot;@angular/forms&quot;;
+
+@Component({
+ selector: &quot;app-root&quot;,
+ templateUrl: &quot;./app.component.html&quot;,
+ styleUrls: [&quot;./app.component.scss&quot;],
+})
+export class AppComponent implements OnInit {
+ form: FormGroup;
+
+ ngOnInit(): void {
+   this.form = this.createForm();
+ }
+
+ createForm() {
+   return new FormGroup({
+     name: new FormControl(&quot;&quot;),
+     white_wine: new FormControl(0),
+     red_wine: new FormControl(0),
+     beer: new FormControl(0),
+   });
+ }
+}</code></pre>
+<p>Using this form works fine, when typing you can see the json changing on the bottom of the page. Currently, we have tree number fields for taking our order. This is fine, but I would like users to press on a plus/minus button to increase/decrease the value of the input field.</p>
+<h3><strong>Create a custom component</strong></h3>
+<p>Let’s start by generating a custom component using <a href="https://angular.io/cli/generate" target="_blank" rel="noopener noreferrer"><strong>Angular CLI</strong></a>.</p>
+<p>First, let add an input to show a number and two buttons, one for decrease and one for increase.</p>
+<p>counter-input.component.html</p>
+<pre><code>&lt;button class=&quot;modify decrease&quot; (click)=&quot;decrease()&quot;&gt;-&lt;/button&gt;
+&lt;input type=&quot;text&quot; readonly [value]=&quot;value&quot; /&gt;
+&lt;button class=&quot;modify increase&quot; (click)=&quot;increase()&quot;&gt;+&lt;/button&gt;</code></pre>
+<p>As you can see we created two methods, one for increase and one for decrease. Let’s create the <code>counter-input.component.ts</code> code now.</p>
+<p>counter-input.component.ts</p>
+<pre><code>import { Component, Input } from &quot;@angular/core&quot;;
+
+@Component({
+ selector: &quot;app-counter-input&quot;,
+ templateUrl: &quot;./counter-input.component.html&quot;,
+ styleUrls: [&quot;./counter-input.component.scss&quot;],
+})
+export class CounterInputComponent {
+ @Input() min: number;
+ @Input() max: number;
+
+ value = 0;
+
+ increase(): void {
+   if (typeof this.max === &quot;undefined&quot; || this.value &lt; this.max) {
+     this.value++;
+   }
+ }
+
+ decrease(): void {
+   if (typeof this.min === &quot;undefined&quot; || this.value &gt; this.min) {
+     this.value--;
+   }
+ }
+}</code></pre>
+<h3><strong>Implement the ControlValueAccessor</strong></h3>
+<p>A <code>ControlValueAccessor</code> allows us to use our custom component as a form input. This allows us to add additional attributes to our component like <code>FormControlName</code>. The <code>ControlValueAccessor</code> will require us to implement a couple of methods to our <code>counter-input.component.ts class</code>.</p>
+<pre><code>interface ControlValueAccessor {
+  writeValue(obj: any): void
+  registerOnChange(fn: any): void
+  registerOnTouched(fn: any): void
+  setDisabledState(isDisabled: boolean)?: void
+}</code></pre>
+<p class="callout"><strong>INFO</strong></p>
+<p>💡 Angular describes the <code>ControlValueAccessor</code> as: Defines an interface that acts as a bridge between the Angular forms API and a native element in the DOM. More on <a href="https://angular.io/api/forms/ControlValueAccessor" target="_blank" rel="noopener noreferrer">docs</a>.</p>
+<p>In addition to the just implemented methods we have to define a few additional methods and attributes. Let’s define a method for <code>onChange</code> and <code>onTouched</code> , I’ll explain the need of those methods/attributes later on.</p>
+<pre><code>onChange: any = () =&gt; {};
+onTouched: any = () =&gt; {};
+disabled = false;</code></pre>
+<p>Using a FormControl in your application allows you to disable/enable your controls programmatically. FormControls register user interaction, like when a user touched a control or changed its value. Using the ControlValueAccessor interface allows u to tell our component what to do when code of a user interacts with our custom input. Let’s have a look at the newly implemented methods and let them actually do something.</p>
+<p>First lets edit the writeValue method, by default the parameter is named obj and typed any, in our case we want this to be called value and typed number. With this method we will simply change the value of our component.</p>
+<pre><code>writeValue(value: number): void {
+  this.value = value;
+}</code></pre>
+<p>Now let’s register the <code>onChange</code> and <code>onTouched</code> methods as defined before. These methods can be used to tell <code>ReactiveForms</code> when your component is changed or touched.</p>
+<pre><code>registerOnChange(fn: any): void {
+  this.onChange = fn;
+}
+registerOnTouched(fn: any): void {
+  this.onTouched = fn;
+}</code></pre>
+<p>After registering the methods we should assign the <code>disabled</code> attribute.</p>
+<pre><code>setDisabledState?(isDisabled: boolean): void {
+  this.disabled = isDisabled;
+}</code></pre>
+<p>We would like our component to emit a change event after a button is pressed, we can simply do this by calling a just registered method.</p>
+<p>counter-input.component.ts</p>
+<pre><code>increase(): void {
+  if (typeof this.max === &#x27;undefined&#x27; || this.value &lt; this.max) {
+     this.value++;
+     this.onChange(this.value);
+  }
+}
+decrease(): void {
+  if (typeof this.min === &#x27;undefined&#x27; || this.value &gt; this.min) {
+     this.value--;
+     this.onChange(this.value);
+  }
+}</code></pre>
+<p>After implementing all the code we need, we have to make sure that the <code>ControlValueAccessor</code> is provided to our component. We can do this by adding the following code to the <code>@Component</code> decorator.</p>
+<pre><code>providers: [
+ {
+   provide: NG_VALUE_ACCESSOR,
+   useExisting: forwardRef(() =&gt; CounterInputComponent),
+   multi: true,
+ },
+];</code></pre>
+<p class="callout"><strong>INFO</strong></p>
+<p>💡 We need to use a <code>forwardRef</code> here, because the <code>CounterInputComponent</code> is not yet defined. It will be defined later on. More information about <code>forwardRef</code> can be found <a href="https://angular.io/api/core/forwardRef" target="_blank" rel="noopener noreferrer"><strong>here</strong></a>.</p>
+<p>Our <code>counter-input.component.ts</code> file should look something like this now.</p>
+<p>counter-input.component.ts</p>
+<pre><code>import { Component, Input, forwardRef } from &quot;@angular/core&quot;;
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from &quot;@angular/forms&quot;;
+
+@Component({
+ selector: &quot;app-counter-input&quot;,
+ templateUrl: &quot;./counter-input.component.html&quot;,
+ styleUrls: [&quot;./counter-input.component.scss&quot;],
+ providers: [
+   {
+     provide: NG_VALUE_ACCESSOR,
+     useExisting: forwardRef(() =&gt; CounterInputComponent),
+     multi: true,
+   },
+ ],
+})
+export class CounterInputComponent implements ControlValueAccessor {
+ @Input() min: number;
+ @Input() max: number;
+ disabled = false;
+
+ value = 0;
+
+ onChange: any = () =&gt; {};
+ onTouched: any = () =&gt; {};
+
+ increase() {
+   if (typeof this.max === &quot;undefined&quot;) {
+     this.value++;
+     this.onChange(this.value);
+   } else if (this.value &lt; this.max) {
+     this.value++;
+     this.onChange(this.value);
+   }
+ }
+
+ decrease() {
+   if (typeof this.min === &quot;undefined&quot;) {
+     this.value--;
+     this.onChange(this.value);
+   } else if (this.value &gt; this.min) {
+     this.value--;
+     this.onChange(this.value);
+   }
+ }
+
+ writeValue(value: number): void {
+   this.value = value;
+ }
+
+ registerOnChange(fn: any): void {
+   this.onChange = fn;
+ }
+
+ registerOnTouched(fn: any): void {
+   this.onTouched = fn;
+ }
+
+ setDisabledState(isDisabled: boolean): void {
+   this.disabled = isDisabled;
+ }
+}</code></pre>
+<p>The only thing left for our component is updating the html. All we have to do is letting our elements know when the <code>FormControl</code> is disabled.</p>
+<p>counter-input.component.html</p>
+<pre><code>&lt;button class=&quot;modify decrease&quot; (click)=&quot;decrease()&quot; [disabled]=&quot;disabled&quot;&gt;
+ -
+&lt;/button&gt;
+&lt;input type=&quot;text&quot; readonly [value]=&quot;value&quot; [disabled]=&quot;disabled&quot; /&gt;
+&lt;button class=&quot;modify increase&quot; (click)=&quot;increase()&quot; [disabled]=&quot;disabled&quot;&gt;
+ +
+&lt;/button&gt;</code></pre>
+<h3><strong>Updating the form</strong></h3>
+<p>The only thing left to do is updating the form with our custom component.</p>
+<p>place-order.component.html</p>
+<pre><code>&lt;form class=&quot;container&quot; [formGroup]=&quot;form&quot;&gt;
+ &lt;h1&gt;Order your drinks&lt;/h1&gt;
+
+ &lt;div class=&quot;form-control&quot;&gt;
+   &lt;label&gt;Your name: &lt;/label&gt;
+   &lt;input type=&quot;text&quot; placeholder=&quot;Your name&quot; formControlName=&quot;name&quot; /&gt;
+ &lt;/div&gt;
+ &lt;div class=&quot;form-control&quot;&gt;
+   &lt;label&gt;Amount of white wine: &lt;/label&gt;
+   &lt;app-counter-input formControlName=&quot;white_wine&quot;&gt;&lt;/app-counter-input&gt;
+ &lt;/div&gt;
+ &lt;div class=&quot;form-control&quot;&gt;
+   &lt;label&gt;Amount of red wine: &lt;/label&gt;
+   &lt;app-counter-input formControlName=&quot;red_wine&quot;&gt;&lt;/app-counter-input&gt;
+ &lt;/div&gt;
+ &lt;div class=&quot;form-control&quot;&gt;
+   &lt;label&gt;Amount of beer: &lt;/label&gt;
+   &lt;app-counter-input formControlName=&quot;beer&quot;&gt;&lt;/app-counter-input&gt;
+ &lt;/div&gt;
+ &lt;div class=&quot;form-control&quot;&gt;
+   &lt;button&gt;Place order&lt;/button&gt;
+ &lt;/div&gt;
+
+ &lt;pre&gt;
+   {{ form.value | json }}
+ &lt;/pre&gt;
+&lt;/form&gt;</code></pre>
+<p>When creating the form we added two inputs, one for <strong>min</strong> and one for <strong>max</strong>. You could add these here if you would like to use those.</p>
+<h3><strong>All done! 🚀</strong></h3>

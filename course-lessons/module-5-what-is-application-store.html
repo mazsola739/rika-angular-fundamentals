@@ -1,0 +1,39 @@
+<p class="callout"><strong>VIDEO</strong></p>
+<h3><strong>Watch a video on these topics:</strong></h3>
+<p><a href="https://www.youtube.com/watch?v=f97ICOaekNU&amp;ab_channel=Fireship" target="_blank" rel="noopener noreferrer">1. NGRX Quick Start</a></p>
+<p><a href="https://www.youtube.com/watch?v=9P5DTlg9oLc&amp;ab_channel=DesignCourse" target="_blank" rel="noopener noreferrer">2. Ngrx Store Tutorial</a></p>
+<p><a href="https://www.youtube.com/watch?v=FQ6fzkHvCEY" target="_blank" rel="noopener noreferrer">3. State Management Patterns</a></p>
+<p>An Angular application requires managing some application state, including server-side data, user information, user input, UI state, and many other variables. Developers often make use of injectable services to provide this function (including communication with some back-end Web APIs) in one centralized place, so that the rest of the components in the application can access this shared data to process or update it.</p>
+<p>This works fine for small applications. In some cases, as the application grows in size and multiple components start issuing calls to update or read the application state, things become unstable. The application state may also become inconsistent or unreliable.</p>
+<p>This article proposes a more mature and robust solution to application state management, including server-side data access and using the ngrx/store module.</p>
+<p>The <strong>application state</strong> is a collective set of slices of data that represent the state of an application at any given time. As mentioned earlier, the application state can be any of the slices of data that you need to share across the application:</p>
+<ul><li><strong>Server-side response data:</strong> The data requested and returned from the Web APIs
+</li><li><strong>User information:</strong> When the user logs into your application, store the username, email, and other user-related information. This makes for quick access when the user browses and navigates the application later.
+</li><li><strong>User input:</strong> On any search page, the user types in a subject or phrase for a search and the application displays the results as a list on their screen. When the user clicks on a result, the application navigates to another page to view the details of the selection. The user can view another search result by navigating back to the search page and choosing something else from the list.
+</li><li><strong>UI state:</strong> One of the popular application UI structuring patterns is to have a vertical left-side menu and a right-side contents area. You provide a button to minimize the left-side menu. The state of the left-side menu is stored so that when the user navigates to another screen or page, the left-side menu remains minimized.
+</li><li><strong>Router/location state:</strong> When navigating from one screen to another, the application keeps track of the routing details. The state needs to track which record the user selected so it knows what to render later on.
+</li></ul>
+<p>The options are endless. You may add or remove to the state depending on how the application evolves.</p>
+<p>You need a state management library or a <code>Store</code>. A state lives in the context of a Store, but also, a Store provides at least the minimum information needed to help manage the state. You can:</p>
+<ul><li>Model and store the application state
+</li><li>Update the state to maintain its validity
+</li><li>Read the state data
+</li><li>Monitor and observe changes to the state and make relevant changes when required
+</li></ul>
+<h3><strong>How NgRx works</strong></h3>
+<p>There are five parts that constitute NgRx:</p>
+<ul><li>Store
+</li><li>Reducers (and Meta-Reducers)
+</li><li>Actions
+</li><li>Selectors
+</li><li>Effects
+</li></ul>
+<p>The basic implementation looks like the following:</p>
+<p><img src="course-lessons/img/image37.webp" alt="Store">.</p>
+<ul><li>Your application’s <strong>state</strong> is maintained in the <strong>store</strong>. The <strong>store</strong> is immutable.
+</li><li>Your application’s <strong>components</strong> can subscribe to the <strong>store</strong> and get automatic updates of <strong>state</strong> through <strong>selectors</strong>.
+</li><li><strong>Selectors</strong> enable <strong>components</strong> to get a <strong>slice</strong> (a part) of your application’s <strong>state</strong>, and also mutate state with selector functions.
+</li><li><strong>Actions</strong> modify the state of the <strong>store</strong> by using <strong>reducers</strong> (functions) that enable changes while keeping it immutable.
+</li><li><strong>Meta-Reducers (not shown)</strong> are hooks where you can pre or post-process actions before they get invoked.
+</li><li><strong>Effects</strong> occur as a result from <strong>actions</strong>, and can also create <strong>actions</strong> when called. <strong>Effects</strong> primary responsibility is to create async side-effects (like service calls to APIs), that ultimately generate other <strong>actions</strong>.
+</li></ul>

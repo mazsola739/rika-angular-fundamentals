@@ -1,0 +1,22 @@
+<p class="callout"><strong>INFO</strong></p>
+<h3><strong>Official angular documentation: </strong><a href="https://angular.io/guide/pipes#transforming-data-with-parameters-and-chained-pipes" target="_blank" rel="noopener noreferrer"><strong>Pipes</strong></a><strong>.</strong></h3>
+<p>Use optional parameters to fine-tune a pipe&#x27;s output. For example, use the <code>CurrencyPipe</code> with a country code such as <code>EUR</code> as a parameter. The template expression <code>{{ amount | currency:&#x27;EUR&#x27; }}</code> transforms the amount to currency in euros. Follow the <code>pipe</code> name (<code>currency</code>) with a colon (<code>:</code>) and the parameter value (<code>&#x27;EUR&#x27;</code>).</p>
+<p>If the pipe accepts multiple parameters, separate the values with colons. For example, <code>{{ amount | currency:&#x27;EUR&#x27;:&#x27;Euros &#x27;}}</code> adds the second parameter, the string literal <code>&#x27;Euros&#x27;</code>, to the output string. Use any valid template expression as a parameter, such as a string literal or a component property.</p>
+<p>Some pipes require at least one parameter and allow more optional parameters, such as <code>SlicePipe</code>. For example, <code>{{ slice:1:5 }}</code> creates a new array or string containing a subset of the elements starting with element <code>1</code> and ending with element <code>5</code>.</p>
+<h3><strong>Example: Formatting a date</strong></h3>
+<p>The tabs in the following example demonstrates toggling between two different formats (<code>&#x27;shortDate&#x27;</code> and <code>&#x27;fullDate&#x27;</code>):</p>
+<ul><li>The <code>app.component.html</code> template uses a format parameter for the <code>DatePipe</code> (named date) to show the date as <strong>04/15/88</strong>.
+</li><li>The <code>hero-birthday2.component.ts</code> component binds the pipe&#x27;s format parameter to the component&#x27;s format property in the template section, and adds a button for a click event bound to the component&#x27;s <code>toggleFormat()</code> method.
+</li><li>The <code>hero-birthday2.component.ts</code> component&#x27;s <code>toggleFormat()</code> method toggles the component&#x27;s format property between a short form (<code>&#x27;shortDate&#x27;</code>) and a longer form (<code>&#x27;fullDate&#x27;</code>).
+</li><li>app.component.html
+</li><li>hero-birthday2.component.ts
+</li><li>hero-birthday2.component.ts
+</li></ul>
+<pre><code>   &lt;p&gt;The hero&#x27;s birthday is {{ birthday | date:&quot;MM/dd/yy&quot; }} &lt;/p&gt;</code></pre>
+<h3><strong>Example: Applying two formats by chaining pipes</strong></h3>
+<p>Chain pipes so that the output of one pipe becomes the input to the next.</p>
+<p>In the following example, chained pipes first apply a format to a date value, then convert the formatted date to uppercase characters. The first tab for the <code>src/app/app.component.html</code> template chains <code>DatePipe</code> and <code>UpperCasePipe</code> to display the birthday as <strong>APR 15, 1988</strong>. The second tab for the <code>src/app/app.component.html</code> template passes the <strong>fullDate</strong> parameter to date before chaining to uppercase, which produces <strong>FRIDAY, APRIL 15, 1988</strong>.</p>
+<ul><li>src/app/app.component.html (1)
+</li><li>src/app/app.component.html (2)
+</li></ul>
+<pre><code>   &lt;p&gt;The chained hero&#x27;s birthday is {{ birthday | date | uppercase}} &lt;/p&gt;</code></pre>

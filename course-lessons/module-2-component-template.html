@@ -1,0 +1,222 @@
+<p class="callout"><strong>INFO</strong></p>
+<h3><strong>Original article: </strong><a href="https://angular.io/guide/template-reference-variables" target="_blank" rel="noopener noreferrer"><strong>Template variables</strong></a><strong>.</strong></h3>
+<h3><strong>Introduction to the ng-template directive</strong></h3>
+<p>Like the name indicates, the <code>ng-template</code> directive represents an Angular template: this means that the content of this tag will contain part of a template, that can be then be composed together with other templates in order to form the final component template.</p>
+<p>Angular is already using <code>ng-template</code> under the hood in many of the structural directives that we use all the time: ngIf, ngFor and ngSwitch.</p>
+<p>Let&#x27;s get started learning <code>ng-template</code> with an example. Here we are defining two tab buttons of a tab component (more on this later):</p>
+<p>src/app/app.component.ts</p>
+<pre><code>@Component({
+ selector: &quot;my-app&quot;,
+ templateUrl: &quot;./app.component.html&quot;,
+ styleUrls: [&quot;./app.component.css&quot;],
+})
+export class AppComponent {
+ loginText = &quot;Login&quot;;
+ signUpText = &quot;Sign Up&quot;;
+ lessons = [&quot;Lesson 1&quot;, &quot;Lessons 2&quot;];
+
+ login() {
+   console.log(&quot;Login&quot;);
+ }
+
+ signUp() {
+   console.log(&quot;Sign Up&quot;);
+ }
+}</code></pre>
+<p>src/app/app.component.html</p>
+<pre><code>&lt;ng-template&gt;
+ &lt;div class=&quot;group&quot;&gt;
+   &lt;h2&gt;Introduction to the ng-template directive&lt;/h2&gt;
+   &lt;ng-template #template&gt;
+     &lt;button class=&quot;tab-button&quot; (click)=&quot;login()&quot;&gt;{{ loginText }}&lt;/button&gt;
+     &lt;button class=&quot;tab-button&quot; (click)=&quot;signUp()&quot;&gt;{{ signUpText }}&lt;/button&gt;
+   &lt;/ng-template&gt;
+ &lt;/div&gt;
+&lt;/ng-template&gt;</code></pre>
+<p>If you try the example above, you might be surprised to find out that this example does not render anything to the screen!</p>
+<p>This is normal and it&#x27;s the expected behavior. This is because with the ng-template tag we are simply defining a template, but we are not using it yet.</p>
+<p>Let&#x27;s then find an example where we can render an output, using some of the most commonly used Angular directives.</p>
+<h3><strong>The </strong><code><strong>ng-template</strong></code><strong> directive and </strong><code><strong>ngIf</strong></code></h3>
+<p>You probably came across <code>ng-template</code> for the first time while implementing an if/else scenario such as for example this one:</p>
+<p>src/app/app.component.html</p>
+<pre><code>&lt;ng-template ngIf*=&quot;isContentUploaded&quot;&gt; Content &lt;/ng-template&gt;
+
+&lt;ng-template #loading&gt;
+ &lt;div&gt;Loading...&lt;/div&gt;
+&lt;/ng-template&gt;</code></pre>
+<p>This is a very common use of the ngIf/else functionality: we display an alternative <code>loading</code> template while waiting for the data to arrive from the backend.</p>
+<p>As we can see, the else clause is pointing to a template, which has the name <code>loading</code>. The name was assigned to it via a template reference, using the <code>#loading</code> syntax.</p>
+<p>But besides that else template, the use of ngIf also creates a second implicit ng-template! Let&#x27;s have a look at what is happening under the hood:</p>
+<p>src/app/app.component.html</p>
+<pre><code>&lt;ng-template ngIf*=&quot;isContentUploaded$; else loading&quot;&gt;
+ Content
+&lt;/ng-template&gt;
+
+&lt;ng-template #loading&gt;
+ &lt;div&gt;Loading...&lt;/div&gt;
+&lt;/ng-template&gt;</code></pre>
+<p>This is what happens internally as Angular desugars the more concise <code>*ngIf</code> structural directive syntax. Let&#x27;s break down what happened during the desugaring:</p>
+<ul><li>The element onto which the structural directive <code>ngIf</code> was applied has been moved into an <code>ng-template</code>
+</li></ul>
+<p>And this is just one example, of a particular case with <code>ngIf</code>. But with <code>ngFor</code> and <code>ngSwitch</code> a similar process also occurs.</p>
+<p>These directives are all very commonly used, so this means these templates are present everywhere in Angular, either implicitly or explicitly.</p>
+<h3><strong>Multiple Structural Directives</strong></h3>
+<p>Let&#x27;s see what happens if for example we try to use ngIf and <code>ngFor</code>:</p>
+<p>src/app/app.component.html</p>
+<pre><code>&lt;div class=&quot;lesson&quot; *ngIf=&quot;lessons&quot; *ngFor=&quot;let lesson of lessons&quot;&gt;
+ &lt;div class=&quot;lesson-detail&quot;&gt;{{ lesson }}&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+<p>This would not work! Instead, we would get the following error message:</p>
+<p class="callout"><strong>ERROR</strong></p>
+<p>Uncaught Error: Template parse errors: Can&#x27;t have multiple template bindings on one element. Use only one attribute named &#x27;template&#x27; or prefixed with</p>
+<p>This means that its not possible to apply two structural directives to the same element. In order to do so, we would have to do something similar to this:</p>
+<p>src/app/app.component.html</p>
+<pre><code>&lt;div *ngIf=&quot;lessons&quot;&gt;
+ &lt;div class=&quot;lesson&quot; *ngFor=&quot;let lesson of lessons&quot;&gt;
+   &lt;div class=&quot;lesson-detail&quot;&gt;{{ lesson }}&lt;/div&gt;
+ &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+<p>In this example, we have moved the <code>ngIf</code> directive to an outer wrapping div, but in order for this to work we have to create that extra div element.</p>
+<p>This solution would already work, but is there a way to apply a structural directive to a section of the page without having to create an extra element?</p>
+<p>Yes and that is exactly what the <code>ng-container</code> structural directive allows us to do!</p>
+<h3><strong>The </strong><code><strong>ng-container</strong></code><strong> directive</strong></h3>
+<p>In order to avoid having to create that extra div, we can instead use <code>ng-container</code> directive:</p>
+<p>src/app/app.component.html</p>
+<pre><code>&lt;ng-container *ngIf=&quot;lessons&quot;&gt;
+ &lt;div class=&quot;lesson&quot; *ngFor=&quot;let lesson of lessons&quot;&gt;
+   &lt;div class=&quot;lesson-detail&quot;&gt;{{ lesson }}&lt;/div&gt;
+ &lt;/div&gt;
+&lt;/ng-container&gt;</code></pre>
+<p>As we can see, the <code>ng-container</code> directive provides us with an element that we can attach a structural directive to a section of the page, without having to create an extra element just for that.</p>
+<p>There is another major use case for the <code>ng-container</code> directive: it can also provide a placeholder for injecting a template dynamically into the page.</p>
+<h3><strong>Dynamic Template Creation with the </strong><code><strong>ngTemplateOutlet</strong></code><strong> directive</strong></h3>
+<p>Being able to create template references and point them to other directives such as <code>ngIf</code> is just the beginning.</p>
+<p>We can also take the template itself and instantiate it anywhere on the page, using the <code>ngTemplateOutlet</code> directive:</p>
+<p>src/app/app.component.html</p>
+<pre><code>&lt;div&gt;
+ &lt;ng-container *ngTemplateOutlet=&quot;loading&quot;&gt;&lt;/ng-container&gt;
+&lt;/div&gt;
+
+&lt;ng-template #loading&gt;
+   Loading....
+&lt;/ng-template&gt;</code></pre>
+<p>We can see here how <code>ng-container</code> helps with this use case: we are using it to instantiate on the page the <em>loading template</em> that we defined above.</p>
+<p>We are refering to the <em>loading template</em> via its template reference <code>#loading</code>, and we are using the <code>ngTemplateOutlet</code> structural directive to instantiate the template.</p>
+<p>We could add as many <code>ngTemplateOutlet</code> tags to the page as we would like, and instantiate a number of different templates. The value passed to this directive can be any expression that evaluates into a template reference, more on this later.</p>
+<p>Now that we know how to instantiate templates, let&#x27;s talk about what is accessible or not by the template.</p>
+<h3><strong>Template Context</strong></h3>
+<p>Inside the <code>ng-template</code> tag body, we have access to the same context variables that are visible in the outer template, such as for example the variable <code>lessons</code>.</p>
+<p>And this is because all <code>ng-template</code> instances have access also to the same context on which they are embedded.</p>
+<p>But each template can also define its own set of input variables! Actually, each template has associated a context object containing all the template-specific input variables.</p>
+<p>Let&#x27;s have a look at an example:</p>
+<p>src/app/app.component.ts</p>
+<pre><code>@Component({
+ selector: &quot;my-app&quot;,
+ templateUrl: &quot;./app.component.html&quot;,
+ styleUrls: [&quot;./app.component.css&quot;],
+})
+export class AppComponent {
+ totalEstimate = 10;
+ ctx = { estimate: this.totalEstimate };
+}</code></pre>
+<p>src/app/app.component.html</p>
+<pre><code>&lt;ng-template #estimateTemplate let-lessonsCounter=&quot;estimate&quot;&gt;
+ &lt;div&gt;Approximately {{ lessonsCounter }} lessons ...&lt;/div&gt;
+&lt;/ng-template&gt;
+&lt;ng-container *ngTemplateOutlet=&quot;estimateTemplate; context: ctx&quot;&gt;
+&lt;/ng-container&gt;</code></pre>
+<p>Here is the breakdown of this example:</p>
+<ul><li>This template, unlike the previous templates also has one input variable (it could also have several)
+</li><li>The input variable is called <em>lessonsCounter</em>, and it&#x27;s defined via a <code>ng-template</code> property using the prefix <code>let-</code>
+</li><li>The variable <em>lessonsCounter</em> is visible inside the <code>ng-template</code> body, but not outside
+</li><li>The content of this variable is determined by the expression that its assigned to the property <code>let-lessonsCounter</code>
+</li><li>That expression is evaluated against a context object, passed to <code>ngTemplateOutlet</code> together with the template to instantiate
+</li><li>This context object must then have a property named estimate, for any value to be displayed inside the template
+</li><li>The context object is passed to <code>ngTemplateOutlet</code> via the context property, that can receive any expression that evaluates to an object
+</li></ul>
+<p>Given the example above, this is what would get rendered to the screen:</p>
+<p class="callout"><strong>RENDERED TO THE SCREEN</strong></p>
+<p>Approximately 10 lessons ...</p>
+<p>This gives us a good overview of how to define and instantiate our own templates.</p>
+<p>Another thing that we can also do is interact with a template programmatically at the level of the component itself: let&#x27;s see how we can do that.</p>
+<h3><strong>Template References</strong></h3>
+<p>The same way that we can refer to the loading template using a template reference, we can also have a template injected directly into our component using the <code>ViewChild</code> decorator:</p>
+<p>src/app/app.component.ts</p>
+<pre><code>@Component({
+ selector: &quot;my-app&quot;,
+ templateUrl: &quot;./app.component.html&quot;,
+ styleUrls: [&quot;./app.component.css&quot;],
+})
+export class AppComponent implements OnInit {
+ @ViewChild(&quot;defaultTabButtons&quot;)
+ private defaultTabButtonsTpl: TemplateRef&lt;any&gt;;
+
+ ngOnInit() {
+   console.log(this.defaultTabButtonsTpl);
+ }
+}</code></pre>
+<p>src/app/app.component.html</p>
+<pre><code>&lt;ng-template #defaultTabButtons&gt;
+ &lt;button class=&quot;tab-button&quot; (click)=&quot;login()&quot;&gt;{{ loginText }}&lt;/button&gt;
+ &lt;button class=&quot;tab-button&quot; (click)=&quot;signUp()&quot;&gt;{{ signUpText }}&lt;/button&gt;
+&lt;/ng-template&gt;</code></pre>
+<p>As we can see, the template can be injected just like any other DOM element or component, by providing the template reference name defaultTabButtons to the <code>ViewChild</code> decorator.</p>
+<p>This means that templates are accessible also at the level of the component class, and we can do things such as for example pass them to child components!</p>
+<p>An example of why we would want to do that is to create a more customizable component, where can pass to it not only a configuration parameter or configuration object: we can also pass a template as an input parameter.</p>
+<h3><strong>Configurable Components with Template Partial @Inputs</strong></h3>
+<p>Let&#x27;s take for example a tab container, where we would like to give the user of the component the possibility of configuring the look and feel of the tab buttons.</p>
+<p>Here is how that would look like, we would start by defining the custom template for the buttons in the parent component:</p>
+<p>src/app/app.component.html</p>
+<pre><code>&lt;ng-template #customTabButtons&gt;
+ &lt;div class=&quot;custom-class&quot;&gt;
+   &lt;button class=&quot;tab-button&quot; (click)=&quot;login()&quot;&gt;{{ loginText }}&lt;/button&gt;
+   &lt;button class=&quot;tab-button&quot; (click)=&quot;signUp()&quot;&gt;{{ signUpText }}&lt;/button&gt;
+ &lt;/div&gt;
+&lt;/ng-template&gt;
+&lt;tab-container [headerTemplate]=&quot;customTabButtons&quot;&gt;&lt;/tab-container&gt;</code></pre>
+<p>And then on the tab container component, we could define an input property which is also a template named <code>headerTemplate</code>:</p>
+<p>src/app/tab-container.component.ts</p>
+<pre><code>import { Component, Input, TemplateRef } from &quot;@angular/core&quot;;
+
+@Component({
+ selector: &quot;tab-container&quot;,
+ template: `
+   &lt;ng-template #defaultTabButtons&gt;
+     &lt;div class=&quot;default-tab-buttons&quot;&gt;...&lt;/div&gt;
+   &lt;/ng-template&gt;
+   &lt;ng-container
+     *ngTemplateOutlet=&quot;headerTemplate ? headerTemplate : defaultTabButtons&quot;
+   &gt;
+   &lt;/ng-container&gt;
+ `,
+})
+export class TabContainerComponent {
+ @Input()
+ headerTemplate: TemplateRef&lt;any&gt;;
+}</code></pre>
+<p>A couple of things are going on here, in this final combined example. Let&#x27;s break this down:</p>
+<ul><li>There is a default template defined for the tab buttons, called <code>defaultTabButtons</code>
+</li><li>This template will be used only if the input property <code>headerTemplate</code> remains <code>undefined</code>
+</li><li>If the property is defined, then the custom input template passed via <code>headerTemplate</code> will be used to display the buttons instead
+</li><li>The headers template is instantiated inside a <code>ng-container</code> placeholder, using the <code>ngTemplateOutlet</code> property
+</li><li>The decision of which template to use (default or custom) is taken using a ternary expression, but if that logic was complex we could also delegate this to a controller method
+</li></ul>
+<p>The end result of this design is that the tab container will display a default look and feel for the tab buttons if no custom template is provided, but it will use the custom template if its available.</p>
+<h3><strong>Try it out!</strong></h3>
+<h3><strong>Content projection ()</strong></h3>
+<p>Content projection is a pattern in which you insert, or project, the content you want to use inside another component. For example, you could have a Card component that accepts content provided by another component.</p>
+<h4><strong>Single-slot content projection</strong></h4>
+<p>The most basic form of content projection is single-slot content projection. Single-slot content projection refers to creating a component into which you can project one component. For example, the following component uses an <code>&lt;ng-content&gt;</code> element to display a message.</p>
+<pre><code>import { Component } from &#x27;@angular/core&#x27;;
+
+@Component({
+ selector: &#x27;app-hero&#x27;,
+ template: `
+   &lt;h2&gt;Single-slot content projection&lt;/h2&gt;
+   &lt;ng-content&gt;&lt;/ng-content&gt;
+ `
+})
+export class HeroComponent {}
+&lt;app-hero&gt;
+ &lt;p&gt;Is content projection cool?&lt;/p&gt;
+&lt;/app-hero&gt;</code></pre>

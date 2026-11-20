@@ -1,0 +1,115 @@
+<p class="callout"><strong>INFO</strong></p>
+<h3><strong>Original article: </strong><a href="https://angular.io/guide/property-binding" target="_blank" rel="noopener noreferrer"><strong>Property binding</strong></a><strong>.</strong></h3>
+<p class="callout"><strong>VIDEO</strong></p>
+<h3><strong>Watch a video on this topic: </strong><a href="https://www.linkedin.com/learning/angular-essential-training-2/property-binding" target="_blank" rel="noopener noreferrer"><strong>Property binding</strong></a></h3>
+<p>Property binding in Angular helps you set values for properties of HTML elements or directives. Use property binding to do things such as toggle button functionality, set paths programmatically, and share values between components.</p>
+<h3><strong>Binding to a property</strong></h3>
+<p>To bind to an element&#x27;s property, enclose it in square brackets, <code>[]</code>, which identifies the property as a target property. A target property is the DOM property to which you want to assign a value. For example, the target property in the following code is the image element&#x27;s <code>src</code> property.</p>
+<pre><code>&lt;img alt=&quot;item&quot; [src]=&quot;itemImageUrl&quot; /&gt;</code></pre>
+<p>In most cases, the target name is the name of a property, even when it appears to be the name of an attribute. In this example, <code>src</code> is the name of the <code>&lt;img&gt;</code> element property.</p>
+<p>The brackets, <code>[]</code>, cause Angular to evaluate the right-hand side of the assignment as a dynamic expression. Without the brackets, Angular treats the right-hand side as a string literal and sets the property to that static value.</p>
+<pre><code>&lt;app-item-detail childItem=&quot;parentItem&quot;&gt;&lt;/app-item-detail&gt;</code></pre>
+<p>Omitting the brackets renders the string <code>parentItem</code>, not the value of <code>parentItem</code>.</p>
+<h3><strong>Setting an element property to a component property value</strong></h3>
+<p>To bind the <code>src</code> property of an <code>&lt;img&gt;</code> element to a component&#x27;s property, place the target, <code>src</code>, in square brackets followed by an equal sign and then the property. The property here is <code>itemImageUrl</code>.</p>
+<p>src/app/app.component.html</p>
+<pre><code>&lt;img alt=&quot;item&quot; [src]=&quot;itemImageUrl&quot; /&gt;</code></pre>
+<p>src/app/app.component.ts</p>
+<pre><code>itemImageUrl = &quot;../assets/phone.png&quot;;</code></pre>
+<p><strong>colspan and colSpan</strong></p>
+<p>A common point of confusion is between the attribute, <code>colspan</code>, and the property, <code>colSpan</code>. Notice that these two names differ by only a single letter.</p>
+<p>If you wrote something like this:</p>
+<pre><code>&lt;tr&gt;&lt;td colspan=&quot;{{1 + 1}}&quot;&gt;Three-Four&lt;/td&gt;&lt;/tr&gt;</code></pre>
+<p>You&#x27;d get this error:</p>
+<p class="callout"><strong>ERROR</strong></p>
+<p>Template parse errors: Can&#x27;t bind to &#x27;colspan&#x27; because it isn&#x27;t a known built-in property</p>
+<p>As the message says, the <code>&lt;td&gt;</code> element does not have a <code>colspan</code> property. This is true because <code>colspan</code> is an attribute — <code>colSpan</code>, with a capital <code>S</code>, is the corresponding property. Interpolation and property binding can set only properties, not attributes.</p>
+<p>Instead, you&#x27;d use property binding and write it like this:</p>
+<pre><code>&lt;!-- Notice the colSpan property is camel case --&gt;
+&lt;tr&gt;
+ &lt;td [colSpan]=&quot;1 + 1&quot;&gt;Three-Four&lt;/td&gt;
+&lt;/tr&gt;</code></pre>
+<p>Another example is disabling a button when the component says that it isUnchanged:</p>
+<pre><code>&lt;!-- Bind button disabled state to `isUnchanged` property --&gt;
+&lt;button type=&quot;button&quot; [disabled]=&quot;isUnchanged&quot;&gt;Disabled Button&lt;/button&gt;</code></pre>
+<p>Another is setting a property of a directive:</p>
+<pre><code>&lt;p [ngClass]=&quot;classes&quot;&gt;
+ [ngClass] binding to the classes property making this blue
+&lt;/p&gt;</code></pre>
+<p>Yet another is setting the model property of a custom component—a great way for parent and child components to communicate:</p>
+<pre><code>&lt;app-item-detail [childItem]=&quot;parentItem&quot;&gt;&lt;/app-item-detail&gt;</code></pre>
+<h3><strong>Toggling button functionality</strong></h3>
+<p>To disable a button&#x27;s functionality depending on a Boolean value, bind the DOM <code>disabled</code> property to a property in the class that is <code>true</code> or <code>false</code>.</p>
+<p>src/app/app.component.html</p>
+<pre><code>&lt;!-- Bind button disabled state to `isUnchanged` property --&gt;
+&lt;button type=&quot;button&quot; [disabled]=&quot;isUnchanged&quot;&gt;Disabled Button&lt;/button&gt;</code></pre>
+<p>src/app/app.component.ts</p>
+<pre><code>isUnchanged = true;</code></pre>
+<h3><strong>Setting a directive property</strong></h3>
+<p>To set a property of a directive, place the directive within square brackets , such as <code>[ngClass]</code>, followed by an equal sign and the property. Here, the property is <code>classes</code>.</p>
+<p>src/app/app.component.html</p>
+<pre><code>&lt;p [ngClass]=&quot;classes&quot;&gt;
+ [ngClass] binding to the classes property making this blue
+&lt;/p&gt;</code></pre>
+<p>src/app/app.component.ts</p>
+<pre><code>classes = &quot;special&quot;;</code></pre>
+<p>Angular applies the class special to the <code>&lt;p&gt;</code> element so that you can use special to apply CSS styles.</p>
+<h3><strong>Bind values between components</strong></h3>
+<p>To set the model property of a custom component, place the target, here <code>childItem</code>, between square brackets <code>[]</code> followed by an equal sign and the property. Here, the property is <code>parentItem</code>.</p>
+<p>src/app/app.component.html</p>
+<pre><code>&lt;app-item-detail [childItem]=&quot;parentItem&quot;&gt;&lt;/app-item-detail&gt;</code></pre>
+<p>To use the target and the property, you must declare them in their respective classes.</p>
+<p>Declare the target of <code>childItem</code> in its component class, in this case <code>ItemDetailComponent</code>.</p>
+<p>For example, the following code declares the target of <code>childItem</code> in its component class, in this case <code>ItemDetailComponent</code>.</p>
+<p>Then, the code contains an <code>@Input()</code> decorator with the <code>childItem</code> property so data can flow into it.</p>
+<p>src/app/item-detail/item-detail.component.ts</p>
+<pre><code>@Input() childItem = &#x27;&#x27;;</code></pre>
+<p>Next, the code declares the property of <code>parentItem</code> in its component class, in this case <code>AppComponent</code>. In this example the type of <code>childItem</code> is <code>string</code>, so <code>parentItem</code> needs to be a string. Here, <code>parentItem</code> has the string value of <code>lamp</code>.</p>
+<p>src/app/app.component.ts</p>
+<pre><code>parentItem = &quot;lamp&quot;;</code></pre>
+<p>With this configuration, the view of <code>&lt;app-item-detail&gt;</code> uses the value of <code>lamp</code> for <code>childItem</code>.</p>
+<h3><strong>Property binding and security</strong></h3>
+<p>Property binding can help keep content secure. For example, consider the following malicious content.</p>
+<pre><code>evilTitle = &#x27;Template &lt;script&gt;alert(&quot;evil never sleeps&quot;)&lt;/script&gt; Syntax&#x27;;</code></pre>
+<p>The component template interpolates the content as follows:</p>
+<pre><code>&lt;p&gt;
+ &lt;span&gt;&quot;{{evilTitle}}&quot; is the &lt;i&gt;interpolated&lt;/i&gt; evil title.&lt;/span&gt;
+&lt;/p&gt;</code></pre>
+<p>The browser doesn&#x27;t process the HTML and instead displays it raw, as follows.</p>
+<p class="callout"><strong>TEMPLATE</strong></p>
+<p>&quot;Template Syntax&quot; is the interpolated evil title.</p>
+<p>Angular does not allow HTML with <code>&lt;script&gt;</code> tags, neither with interpolation nor property binding, which prevents the JavaScript from running.</p>
+<p>In the following example, however, Angular sanitizes the values before displaying them.</p>
+<p>src/app/app.component.html</p>
+<pre><code>&lt;!--
+Angular generates a warning for the following line as it sanitizes them
+WARNING: sanitizing HTML stripped some content (see https://g.co/ng/security#xss).
+--&gt;
+&lt;p&gt;
+ &quot;&lt;span [innerHTML]=&quot;evilTitle&quot;&gt;&lt;/span&gt;&quot; is the &lt;i&gt;property bound&lt;/i&gt; evil
+ title.
+&lt;/p&gt;</code></pre>
+<p>Interpolation handles the <code>&lt;script&gt;</code> tags differently than property binding, but both approaches render the content harmlessly. The following is the browser output of the sanitized <code>evilTitle</code> example.</p>
+<p class="callout"><strong>TEMPLATE</strong></p>
+<p>&quot;Template Syntax&quot; is the property bound evil title.</p>
+<h3><strong>Property binding and interpolation</strong></h3>
+<p>Often interpolation and property binding can achieve the same results. The following binding pairs do the same thing.</p>
+<p>src/app/app.component.html</p>
+<pre><code>&lt;p&gt;
+ &lt;img alt=&quot;Interpolated item&quot; src=&quot;{{itemImageUrl}}&quot; /&gt; is the
+ &lt;i&gt;interpolated&lt;/i&gt; image.
+&lt;/p&gt;
+&lt;p&gt;
+ &lt;img alt=&quot;Property Bound item&quot; [src]=&quot;itemImageUrl&quot; /&gt; is the
+ &lt;i&gt;property bound&lt;/i&gt; image.
+&lt;/p&gt;
+
+&lt;p&gt;
+ &lt;span&gt;&quot;{{interpolationTitle}}&quot; is the &lt;i&gt;interpolated&lt;/i&gt; title.&lt;/span&gt;
+&lt;/p&gt;
+&lt;p&gt;
+ &quot;&lt;span [innerHTML]=&quot;propertyTitle&quot;&gt;&lt;/span&gt;&quot; is the
+ &lt;i&gt;property bound&lt;/i&gt; title.
+&lt;/p&gt;</code></pre>
+<p>Use either form when rendering data values as strings, though interpolation is preferable for readability. However, when setting an element property to a non-string data value, you must use property binding.</p>
+<h3><strong>Try it out!</strong></h3>

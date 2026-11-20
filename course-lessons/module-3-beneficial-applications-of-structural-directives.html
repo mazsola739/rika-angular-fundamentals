@@ -1,0 +1,52 @@
+<p class="callout"><strong>INFO</strong></p>
+<h3><strong>Original article: </strong><a href="https://medium.com/angular-in-depth/having-fun-with-structural-directives-in-angular-69b4d229ad93" target="_blank" rel="noopener noreferrer"><strong>Structural Directives in Angular</strong></a><strong>.</strong></h3>
+<h3><strong>What are Structural Directives?</strong></h3>
+<p><strong>Short:</strong> A directive that is placed on a template element and is providing possibilities to structure the DOM with it. The most well known structural directives provided by Angular are <strong>*ngIf</strong> and <strong>*ngFor</strong>. We can recognize a structural directive by the <code>*</code> in front of its selector name. This is syntactic sugar provided by Angular in order to make them more convenient to use. The following two snippets are basically the same:</p>
+<pre><code>&lt;div *ngIf=&quot;showGreeting&quot;&gt;
+ &lt;p&gt;Welcome, {{username}}&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+<p>is de-sugared into:</p>
+<pre><code>&lt;ng-template [ngIf]=&quot;showGreeting&quot;&gt;
+ &lt;div&gt;
+   &lt;p&gt;Welcome, {{username}}&lt;/p&gt;
+ &lt;/div&gt;
+&lt;/ng-template&gt;</code></pre>
+<p>So, effectively a structural directive is just a directive placed on a template. When it is executed it triggers when and how the given template is rendered.</p>
+<p>The syntactic sugar hides the existence of the template from the developer and therefore enables them to write very declarative and well understandable abstractions for their business use cases. The following directives are samples of some application specific abstractions.</p>
+<h3><strong>The Observables Directive</strong></h3>
+<p>This is an already known and used approach of handling observables <strong>subscriptions</strong> in Angular via structural directives. The advantage of it is that you don’t have to subscribe nor to unsubscribe from observables manually. This is done automatically by the async pipe operator. This is already possible with the *ngIf directive but more often you don’t need the conditional check. This directive comes in handy especially when there would be multiple subscriptions to the same observable in one template and it works perfectly fine within a component with OnPush change detection. Example:</p>
+<p><img src="course-lessons/img/image44.webp" alt="The Observables Directive"></p>
+<h3><strong>Route Params Directive</strong></h3>
+<p>This structural directive allows you to read parameters from the currently active route and pass it via inputs into your container component. Therefore your container component does not have to depend on the ActiveRoute directly, gaining a nice separation of concerns. Assume we have the following route configured:</p>
+<pre><code>const routes: Route[] = [
+ { path: &quot;commits/:usernameParam&quot;, component: CommitsView },
+];</code></pre>
+<p>Then we can use the route params directive to extract the username parameter and pass it to the <code>&lt;commit-list-view&gt;</code> component:</p>
+<p>commit-list-view.component.html</p>
+<pre><code>&lt;Route *params=&quot;let username=usernameParam&quot;&gt;
+ &lt;commit-list-view [user]=&quot;username&quot;&gt;&lt;/commit-list-view&gt;
+&lt;/Route&gt;</code></pre>
+<p>Please note again that the purpose of the component Route is just to form a nice declarative language.</p>
+<h3><strong>Route Configuration Directive</strong></h3>
+<p>With structural directives, we can do all sorts of crazy stuff. If we can read the route params declaratively, can we possibly also configure a route itself? <strong>Yes</strong> we can, but this is a dangerous one and the implementation should be considered as a proof of concept to be able to configure your routes declaratively. The Angular Router allows it to change its configuration at runtime, so we can extend it within a structural directive with a given template.</p>
+<p>app.component.html</p>
+<pre><code>&lt;router-outlet&gt;&lt;/router-outlet&gt;
+
+&lt;Route *path=&quot;&#x27;foo/:usernameParam&#x27; let username=usernameParam&quot;&gt;
+ &lt;commits-container [username]=&quot;username&quot; #cc&gt;
+   &lt;commit-list [commits]=&quot;cc.commits$ | async&quot;&gt;&lt;/commit-list&gt;
+ &lt;/commits-container&gt;
+&lt;/Route&gt;</code></pre>
+<p>In the example above we have configured the route <code>foo/:usernameParam</code>. As with the route params directive we can access these params through the directives context object. It is important to note that this configuration is made inside of the <code>app.component.html</code> and therefore is only rendered once. Otherwise, we would configure the same route over and over again.</p>
+<h3><strong>Fetch Directive</strong></h3>
+<p>This directive allows us to fetch data via HTTP. In this showcase only GET requests are supported. Let’s take a look at its usage:</p>
+<pre><code>&lt;Route *params=&quot;let username=usernameParam&quot;&gt;
+ &lt;Fetch *url=&quot;let commits from commitsUrl(username) map toCommits&quot;&gt;
+   &lt;commit-list [commits]=&quot;commits&quot;&gt;&lt;/commit-list&gt;
+ &lt;/Fetch&gt;
+&lt;/Route&gt;</code></pre>
+<p>In this example we use the route params directive to access the current username route param, pass it into the commitsUrl method and finally map the response to a structure we can display with the <code>&lt;commit-list&gt;</code> component.</p>
+<h3><strong>Summary</strong></h3>
+<p>Again directive in Angular is a very powerful thing,you can create a lot of useful reusable features.</p>
+<p class="callout"><strong>TIP</strong></p>
+<p>See implementation details of showed directives <a href="https://medium.com/angular-in-depth/having-fun-with-structural-directives-in-angular-69b4d229ad93" target="_blank" rel="noopener noreferrer"><strong>HERE</strong></a>.</p>

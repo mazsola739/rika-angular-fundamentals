@@ -1,0 +1,149 @@
+<p class="callout"><strong>INFO</strong></p>
+<h3><strong>Official angular documentation: </strong><a href="https://angular.io/guide/router-tutorial-toh#milestone-5-route-guards" target="_blank" rel="noopener noreferrer"><strong>Route guards</strong></a><strong>.</strong></h3>
+<p>At the moment, any user can navigate anywhere in the application any time, but sometimes you need to control access to different parts of your application for various reasons, some of which might include the following:</p>
+<p>🚫 Perhaps the user is not authorized to navigate to the target component.</p>
+<p>🚫 Maybe the user must login (authenticate) first.</p>
+<p>🚫 Maybe you should fetch some data before you display the target component.</p>
+<p>🚫 You might want to save pending changes before leaving a component.</p>
+<p>🚫 You might ask the user if it&#x27;s OK to discard pending changes rather than save them.</p>
+<p>You add <code>guards</code> to the route configuration to handle these scenarios. The following route <code>guards</code> are available in Angular:</p>
+<ul><li><strong>CanActivate</strong> - <em>to mediate navigation to a route.</em>
+</li><li><strong>CanActivateChild</strong> - <em>to mediate navigation to a child route.</em>
+</li><li><strong>CanDeactivate</strong> - <em>to mediate navigation away from the current route.</em>
+</li><li><strong>Resolve</strong> - <em>to perform route data retrieval before route activation.</em>
+</li><li><strong>CanLoad</strong> - <em>to mediate navigation to a feature module loaded asynchronously.</em>
+</li></ul>
+<p>A guard&#x27;s return value controls the router&#x27;s behavior:</p>
+<p><strong>→</strong> If it returns <code>true</code>, the navigation process continues.</p>
+<p><strong>→</strong> If it returns <code>false</code>, the navigation process stops and the user stays put.</p>
+<p><strong>→</strong> If it returns a <code>UrlTree</code>, the current navigation cancels and a new navigation is initiated to the UrlTree returned.</p>
+<p class="callout"><strong>INFO</strong></p>
+<p>💡 The guard can also tell the router to navigate elsewhere, effectively canceling the current navigation. When doing so inside a guard, the guard should return <code>false</code>;</p>
+<p>The guard might return its boolean answer <code>synchronously</code>. But in many cases, the guard <strong>can&#x27;t</strong> produce an answer <code>synchronously</code>. The guard could ask the user a question, save changes to the server, or fetch fresh data. These are all <code>asynchronous</code> operations.</p>
+<p>Accordingly, a routing guard can return an <code>Observable&lt;boolean&gt;</code> or a <code>Promise&lt;boolean&gt;</code> and the router <strong>will wait</strong> for the <code>observable</code> to resolve to <code>true</code> or <code>false</code>.</p>
+<p class="callout"><strong>WARNING</strong></p>
+<p>❗️ ❗️ The observable provided to the Router <strong>MUST</strong> also <strong>complete</strong>. If the observable does not complete, the navigation <strong>does not continue</strong>.</p>
+<p>💡 You can have multiple guards at every level of a routing hierarchy. The router checks the <code>CanDeactivate</code> guards first, from the deepest child route to the top. Then it checks the <code>CanActivate</code> and <code>CanActivateChild</code> guards from the top down to the deepest child route. If the feature module is loaded asynchronously, the <code>CanLoad</code> guard is checked before the module is loaded. If any guard returns false, pending guards that have not completed are canceled, and the entire navigation is canceled.</p>
+<h3><strong>Guards Usage</strong></h3>
+<h3><strong>📍 CanActivate: requiring authentication</strong></h3>
+<p>In this example we will show implementation and usage of <code>CanActivate</code> and <code>CanActivateChild</code>. The <code>CanActivate</code> decides whether we can navigate to a route or not. It is used to redirect to login page to require authentication. <code>CanActivateChild</code> decides whether we can navigate to child routes or not. It is used to decide link access on the basis of authorization. It is possible that those links accessible to <code>ADMIN</code> role, will be not be allowed to <code>USER</code> role. Let us understand how to use CanActivate and CanActivateChild route guards.</p>
+<p><code>CanActivate</code> is an Angular interface. It is used to force user to login into application before navigating to the route. Find the declaration of CanActivate interface from <a href="https://angular.io/api/router/CanActivate" target="_blank" rel="noopener noreferrer"><strong>Angular doc</strong></a>.</p>
+<pre><code>interface CanActivate {
+ canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable&lt;boolean&gt;|Promise&lt;boolean&gt;|boolean
+}</code></pre>
+<p><code>CanActivate</code> interface has a method named as <code>canActivate()</code> which has following arguments.</p>
+<p><code>ActivatedRouteSnapshot</code>: Contains the information about a route associated with component loaded in outlet in particular time. It can traverse router state tree.</p>
+<p><code>RouterStateSnapshot</code>: It is a tree of activated route snapshots. It has url property that gives the URL from which this snapshot was created.</p>
+<p><code>canActivate()</code> returns <code>boolean</code> value or <code>Observable</code> or <code>Promise</code> of boolean value.</p>
+<p>For creating guard we need to create a service implementing <code>CanActivate</code> interface and override <code>canActivate()</code> method.</p>
+<pre><code>@Injectable()
+export class AuthGuardService implements CanActivate  {
+ canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+   return true;
+ }
+}</code></pre>
+<p>Use <code>canActivate</code> property of <code>Route</code> interface to guard the route and assign service class implementing <code>CanActivate</code> interface, for example <code>AuthGuardService</code>. See how to define canActivate property used in route declarations.</p>
+<pre><code>{
+  path: &#x27;home&#x27;,
+  component: DashboardLayoutComponent,
+  canActivate: [ AuthGuardService ]
+}</code></pre>
+<p>If <code>canActivate()</code> method from <code>AuthGuardService</code> returns <code>true</code> only when route can be navigated.</p>
+<h3><strong>📍 CanActivateChild: guarding child routes</strong></h3>
+<p><code>CanActivateChild</code> is an Angular interface to guard child routes. Suppose a user has been authenticated but not authorized to visit the child routes, so child routes can be guarded using <code>CanActivateChild</code>. Find its declaration from the <a href="https://angular.io/api/router/CanActivateChild" target="_blank" rel="noopener noreferrer"><strong>Angular doc</strong></a>.</p>
+<pre><code>interface CanActivateChild {
+ canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable|Promise|boolean
+}</code></pre>
+<p>Method signature of <code>canActivateChild()</code> is the same as <code>canActivate()</code> .</p>
+<p>So for implementation of CanActivateChild we need only override <code>canActivateChild()</code> method. This method can be overridden in AuthGuardService on an equal basis with <code>canActivate()</code>.</p>
+<pre><code>@Injectable()
+export class AuthGuardService implements CanActivate, CanActivateChild {
+ canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+   return true;
+
+ }
+ canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+   return true;
+ }
+}</code></pre>
+<p>Use <code>canActivateChild</code> property of Route interface to guard the route and assign service class implementing <code>CanActivateChild</code> interface, for example <code>AuthGuardService</code>. See how to define <code>canActivateChild</code> property used in route declarations.</p>
+<pre><code>{
+ path: &#x27;list&#x27;,
+ component: ArticleListComponent,
+ canActivateChild: [ AuthGuardService ],
+ children: [
+   {
+     path: &#x27;:id&#x27;,
+     component: ArticleEditComponent
+   }
+ ],
+}</code></pre>
+<p>In the above route declarations child routes can only be accessed if <code>canActivateChild()</code> method returns <code>true</code>.</p>
+<h3><strong>📍 CanDeactivate: handling unsaved changes</strong></h3>
+<p>In the real world, you might have to accumulate the users changes, validate across fields, validate on the server, or hold changes in a pending state until the user confirms them as a group or cancels and reverts all changes.</p>
+<p>When the user navigates away, you can let the user decide what to do with unsaved changes. If the user cancels, you&#x27;ll stay put and allow more changes. If the user approves, the application can save.</p>
+<p>You still might delay navigation until the save succeeds. If you let the user move to the next screen immediately and saving were to fail (perhaps the data is ruled invalid), you would lose the context of the error.</p>
+<p>You need to stop the navigation while you wait, asynchronously, for the server to return with its answer.</p>
+<p>The <code>CanDeactivate</code> guard helps you decide what to do with unsaved changes and how to proceed. Find the structure of CanDeactivate interface from <a href="https://angular.io/api/router/CanDeactivate" target="_blank" rel="noopener noreferrer"><strong>Angular doc</strong></a>.</p>
+<pre><code>interface CanDeactivate&lt;T&gt; {
+   canDeactivate(component: T,
+                 currentRoute: ActivatedRouteSnapshot,
+                 currentState: RouterStateSnapshot,
+                 nextState?: RouterStateSnapshot): Observable&lt;boolean&gt; | Promise&lt;boolean&gt; | boolean
+}</code></pre>
+<p><code>canDeactivate</code> method will return <code>Observable&lt;boolean&gt;</code> or <code>Promise&lt;boolean&gt;</code> or <code>boolean</code> .</p>
+<p>To use <code>CanDeactivate</code> in our application, we need to create a guard. This will be a service decorated with @Injectable() and will define <code>canDeactivate()</code> method. If a component needs CanDeactivate route guard then that component <strong>HAS ALSO</strong> to create a method named as <code>canDeactivate()</code> .</p>
+<p>Let&#x27;s take a look at simple <code>CanDeactivateGuard</code>:</p>
+<p>Simple CanDeactivateGuard(can-deactivate.guard.ts)</p>
+<pre><code>import { Injectable } from &#x27;@angular/core&#x27;;
+import { CanDeactivate } from &#x27;@angular/router&#x27;;
+import { Observable } from &#x27;rxjs&#x27;;
+
+export interface CanComponentDeactivate {
+canDeactivate: () =&gt; Observable&lt;boolean&gt; | Promise&lt;boolean&gt; | boolean;
+}
+
+@Injectable({
+ providedIn: &#x27;root&#x27;,
+})
+export class CanDeactivateGuard implements CanDeactivate&lt;CanComponentDeactivate&gt; {
+ canDeactivate(component: CanComponentDeactivate) {
+   return component.canDeactivate ? component.canDeactivate() : true;
+ }
+}</code></pre>
+<p>We have created <code>CanDeactivate</code> guard .i.e. <code>CanDeactivateGuard</code> and it can be used for any component. If we want to use CanDeactivate guard some component then we need to create <code>canDeactivate()</code> method within this component. Let&#x27;s imagine we have component EditArticle, we&#x27;d like to show confirmation message and let user decide what to do with unsaved changes. If the user cancels, you&#x27;ll stay put and allow more changes. If the user approves, the application can save.</p>
+<p>Component will look like:</p>
+<pre><code>import { Component, OnInit } from &#x27;@angular/core&#x27;;
+import { ArticleService } from &#x27;../../services/article.service&#x27;;
+import { Article } from &#x27;../../services/article&#x27;;
+import { Observable } from &quot;rxjs&quot;;
+import { LeavingDialogComponent } from &quot;../../leaving-dialog/leaving-dialog.component&quot;;
+
+@Component({
+   templateUrl: &#x27;./article.edit.component.html&#x27;
+})
+export class ArticleEditComponent implements OnInit {
+   article: Article;
+
+   constructor(private articleService: ArticleService) { }
+
+   canDeactivate(): Observable&lt;boolean&gt; | boolean {
+     if(isNoUnSavedChanges(article)){
+       return true;
+     }
+
+     return this.dialog.open(LeavingDialogComponent).afterClosed();
+   }
+}</code></pre>
+<h3><strong>Try it out! Take a look at stackblitz widget below. ⤵</strong></h3>
+<p>Let&#x27;s go through the example application of using CanActivate, CanActivateChild and CanDeactivate!</p>
+<ul><li>You&#x27;ll see the login page. In our demo we have two roles <strong>ADMIN</strong> and <strong>USER</strong>.
+User credential with <strong>ADMIN</strong> role is <code>{ username: &#x27;maria&#x27;, password: &#x27;123&#x27; }</code> and user credential with <strong>USER</strong> role is <code>{ username: &#x27;alex&#x27;, password: &#x27;321&#x27; }</code>.
+</li><li>Let&#x27;s try to navigate <code>/home/articles</code>, you&#x27;ll see that not authorized user can&#x27;t access that page!
+</li><li>Now login with <strong>USER</strong> role <code>{ username: &#x27;alex&#x27;, password: &#x27;321&#x27; }</code>, you&#x27;ll be redirected to home page, there are two tabs in the application <strong>Articles</strong> and <strong>Addresses</strong>, you can try to navigate through them, then go to the <strong>Articles page</strong> and click <strong>edit</strong>, you&#x27;ll see that usual user <strong>can not</strong> edit articles, you&#x27;ll see the modal <strong>You are not permitted to do this action!</strong>
+</li><li>Now login with <strong>ADMIN</strong> role user <code>{ username: &#x27;maria&#x27;, password: &#x27;123&#x27; }</code>.
+</li><li>🚀 User with <strong>ADMIN</strong> role can visit every link in our application.
+</li><li>Go to <strong>Article edit page</strong> and try to change an article and click cancel, you&#x27;ll se modal about unsaved changes.
+</li></ul>
+<p class="callout"><strong>WARNING</strong></p>
+<p>💡 <strong>Go to </strong><a href="https://stackblitz.com/edit/kolomeiets-router-guards-demo" target="_blank" rel="noopener noreferrer"><strong>stackblitz project</strong></a> and see the whole implementation and usage of <strong>Router guards</strong>!</p>

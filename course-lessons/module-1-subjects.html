@@ -1,0 +1,104 @@
+<p class="callout"><strong>INFO</strong></p>
+<h2><a href="https://rxjs-dev.firebaseapp.com/guide/overview" target="_blank" rel="noopener noreferrer"><strong>Official RxJS documentation</strong></a><strong>.</strong></h2>
+<h2><strong>What is a Subject?</strong></h2>
+<p>An RxJS Subject is a special type of Observable that allows values to be multicasted to many Observers. While plain Observables are unicast (each subscribed Observer owns an independent execution of the Observable), Subjects are multicast.</p>
+<h3><strong>Unicast</strong></h3>
+<p><img src="course-lessons/img/image24.webp" alt="unicast"></p>
+<p>An Observable is unicast. An Observer and its Subscriber have a one-to-one relationship. Each subscribed Observer owns an independent execution of the Observable.</p>
+<h3><strong>Multicast</strong></h3>
+<p><img src="course-lessons/img/image8.webp" alt="multicast"></p>
+<p>In comparison to a regular Observable, a Subject allows values to be multicasted to many Observers. A Subject and its subscribers have a one-to-many relationship.</p>
+<p>A Subject can be an Observable as well as an Observer. They hold a registry of many listeners to multiple Observables.</p>
+<h2><strong>Subject</strong></h2>
+<p class="callout"><strong>VIDEO</strong></p>
+<h3><strong>Watch a video on this topic:</strong></h3>
+<p><a href="https://www.linkedin.com/learning/learning-rxjs/subject?autoplay=true&amp;resume=false&amp;u=2113185" target="_blank" rel="noopener noreferrer">Subject</a></p>
+<p>We know that a Subject is an Observable. But instead of sending information to one subscriber, they can send their data to multiple subscribers simultaneously (they multicast).</p>
+<p>A Subject has three methods which you can use.</p>
+<ul><li><em><strong>subscribe</strong></em> with this method, you can activate the subscription of a new subscriber.
+</li><li><em><strong>next</strong></em> with this method, you can pass new values. All the current subscribers will receive this.
+</li><li><em><strong>complete</strong></em> with this method, you close all the subscriptions to the Subject.
+</li></ul>
+<p>A vital detail is that a Subject doesn&#x27;t have an initial value. Every value passed with the next method will send the values to all the subscribers.</p>
+<p>But if the value is already sent before a subscriber is subscribed, it won&#x27;t receive that data.</p>
+<h2><strong>BehaviourSubject</strong></h2>
+<p class="callout"><strong>VIDEO</strong></p>
+<h3><strong>Watch a video on this topic:</strong></h3>
+<p><a href="https://www.linkedin.com/learning/learning-rxjs/behavior-subject?autoplay=true&amp;resume=false&amp;u=2113185" target="_blank" rel="noopener noreferrer">Behavior subject</a></p>
+<p>The <code>BehaviourSubject</code> is a variant of the Subject. This variant knows about the current value, which a normal Subject doesn&#x27;t.</p>
+<p>When there has already been sent data to the current subscribers, this Subject becomes very useful. But another subscriber get&#x27;s introduced at a later moment. Sometimes you want to pass the current value to that subscriber. With the <code>BehaviourSubject</code> you can do that.</p>
+<p>So use the <code>BehaviourSubject</code> to give a subscriber the last known value of the Observable. But, what if you want a bit more than the previous value?</p>
+<p><code>BehaviorSubject</code> works in the following way:</p>
+<p><img src="course-lessons/img/image38.gif" alt="BehaviorSubject"></p>
+<p><strong>Usage</strong></p>
+<p>A most common use case for <code>BehaviorSubject</code> is to act as a store or a cache that subscribers can read the latest value when they need it. Here’s an example that demonstrates a basic implementation of a store:</p>
+<pre><code>const state1 = { name: &quot;James&quot;, age: 33 };
+const state2 = { name: &quot;Anna&quot;, age: 27 };
+
+const store = new BehaviorSubject(state1);
+
+const v1 = getValueFromStore();
+console.log(v1.name); // &#x27;James&#x27;
+
+updateStore(state2);
+
+const v2 = getValueFromStore();
+console.log(v2.name); // &#x27;Anna&#x27;
+
+selectFromStore((state) =&gt; state.age).subscribe((v) =&gt; console.log(v));
+
+function updateStore(v) {
+ store.next(v);
+}
+
+function getValueFromStore() {
+ return store.value;
+}
+
+function selectFromStore(selector) {
+ return store.asObservable().pipe(map(selector));
+}</code></pre>
+<h2><strong>ReplaySubject</strong></h2>
+<p class="callout"><strong>VIDEO</strong></p>
+<h3><strong>Watch a video on this topic:</strong></h3>
+<p><a href="https://www.linkedin.com/learning/learning-rxjs/replay-subject?autoplay=true&amp;resume=false&amp;u=2113185" target="_blank" rel="noopener noreferrer">Replay subject</a></p>
+<p><code>ReplaySubjects</code> are pretty similar to BehaviorSubjects. The difference is that they don’t remember only the last value, but as many as you want. On subscription, they emit all the values they remember to the new observer. You don’t give them any initial value on creation, but you define how many values they should keep in memory. Think of an online playlist that a DJ is playing. But you want to go back in that stream. The <code>ReplaySubject</code> can make sure you can revert three tracks and start listening from there.</p>
+<p><code>ReplaySubject</code> works in the following way:</p>
+<p><img src="course-lessons/img/image6.webp" alt="ReplaySubject"></p>
+<p><strong>Usage</strong></p>
+<p><code>ReplaySubject</code> is commonly used when you need to replay an event or a series of events. Since <code>ReplaySubject</code> doesn’t need a default value as opposed to <code>BehaviorSubject</code>, it’s a handy mechanism to use if an event may never even occur.</p>
+<p>Imagine you lazy load a library that needs to process user events. Some events will occur before the library is loaded, so you’ll need to replay them to the library. To do that, simply create a <code>ReplaySubject</code>, push events to it and let the library subscribe to it when loaded.</p>
+<p>Here’s a code block that demonstrates this:</p>
+<pre><code>const events = setUpListeners();
+emulateLibraryLoad(events);
+
+function emulateLibraryLoad(events) {
+ setTimeout(() =&gt; {
+   events.subscribe((event) =&gt; console.log(event));
+ }, 3000);
+}
+
+function setUpListeners() {
+ const events = new ReplaySubject();
+
+ const clicks = fromEvent(document, &quot;click&quot;);
+ const spacebars = fromEvent(document, &quot;keyup&quot;).pipe(
+   filter((event: any) =&gt; event.code === &quot;Space&quot;)
+ );
+
+ merge(clicks, spacebars)
+   .pipe(tap((event) =&gt; events.next(event)))
+   .subscribe();
+
+ return events.asObservable();
+}</code></pre>
+<h2><strong>Conclusion</strong></h2>
+<p>Let&#x27;s wrap this up and conclude when you need a regular Observable or one of the Subject types.</p>
+<h3><strong>Use a Observable when..</strong></h3>
+<p>A regular Observable should be used when you only need one subscriber. Or you don&#x27;t care that the subscriber that comes first will be finished first until the second will get its values.</p>
+<h3><strong>Use a Subject when..</strong></h3>
+<p>When you need multiple subscribers and care that all the subscribers are getting their new values simultaneously, you need a Subject.</p>
+<ul><li>Use a <strong>BehaviourSubject</strong> when you need the last given value.
+</li><li>Use a <strong>ReplaySubject</strong> when you need more than the last given value. (For example, the previous five values) Or you want to set a time window for the values can be validly sent to subscribers.
+</li><li>Use a <strong>Subject</strong> if you don&#x27;t want to pass any value but just want to hook into the event.
+</li></ul>

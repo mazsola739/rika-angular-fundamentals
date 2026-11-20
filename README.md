@@ -3,7 +3,7 @@
 A courses app: log in, browse and search the courses; admins add, edit and delete them. And the
 RxJS task of the course: a small Star Wars search.
 
-**Live:** <https://mazsola739.github.io/rika-angular-fundamentals/> · **Portfolio:** <https://mazsola739.github.io/mazsola739/>
+**Live:** <https://mazsola739.github.io/rika-angular-fundamentals/> · **Portfolio:** <https://mazsola739.github.io/mazsola739/> · **The same app in React:** <https://mazsola739.github.io/rika-react-fundamentals/>
 
 It was my homework for EPAM's **Angular Fundamentals** course in 2021: five modules, from RxJS to
 an NgRx store, and from the second module on the same app grew. EPAM gave the task sheets, a
@@ -37,6 +37,9 @@ delete freely: **Reset demo data** in the footer brings back the starting course
 The extra tasks are in too: the password toggle is an attribute directive with `exportAs`, and
 `*appIfAdmin` is a structural directive that shows the admin buttons.
 
+The lessons of the course are in the app as well: 64 of them, from Observables to NgRx facades,
+listed module by module on the About page, each on a page of its own (`/#/lessons/…`).
+
 ## What is different from the course's template
 
 | The course template (version 1.1.0)                                          | 2026                                                                                                                          |
@@ -46,7 +49,7 @@ The extra tasks are in too: the password toggle is an attribute directive with `
 | Class guards, `canLoad`, a class interceptor                                 | Functional guards (`canMatch`), functional interceptors                                                                       |
 | `BehaviorSubject` pairs in the services (`isAuthorized$$` + `isAuthorized$`) | The same pair as a private signal and its `asReadonly()` view                                                                 |
 | NgRx 15, `CoursesEffects` class, facade with Observables                     | NgRx 22: functional effects, a facade with `selectSignal`; authors as a second feature (`createActionGroup`, `createFeature`) |
-| Jest                                                                         | Vitest through `ng test`: 74 tests, 19 of them for the backend                                                                |
+| Jest                                                                         | Vitest through `ng test`: 79 tests, 19 of them for the backend                                                                |
 | EPAM's NestJS backend on `localhost:4000`                                    | My own backend: a Bun server, or the same code in the browser                                                                 |
 | Plain passwords in a JSON file                                               | PBKDF2 hashes, expiring tokens                                                                                                |
 | Figma screens for the desktop                                                | The Figma look, on phones too, keyboard and screen reader friendly                                                            |
@@ -138,6 +141,7 @@ src/app/
                    the RxJS Star Wars page, about, 404
 src/testing/       renders the whole app with the backend in memory
 course-tasks/      EPAM's task sheets of the five modules (PDF)
+course-lessons/    the lessons of the course as HTML, with their pictures
 ```
 
 ## Deployment
@@ -150,5 +154,11 @@ Actions**.
 
 The task sheets in [`course-tasks/`](course-tasks) are the task sections of EPAM's Angular
 Fundamentals course material (version 1.1.0, a little newer than the one of my course in 2021); the
-solutions are mine. The app shows them on pages of its own (`/#/tasks/…`), drawn with pdf.js. The RxJS page uses the free
-[Star Wars API](https://swapi.dev), with a saved copy of its names for when it does not answer.
+solutions are mine. The app shows them on pages of its own (`/#/tasks/…`), drawn with pdf.js.
+
+The lessons in [`course-lessons/`](course-lessons) are the other sections of the same material,
+turned from the course's document into HTML. Much of their text quotes the Angular and NgRx
+documentation and the articles they link to; the links are kept, and open in a new tab.
+
+The RxJS page uses the free [Star Wars API](https://swapi.dev), with a saved copy of its names for
+when it does not answer.

@@ -1,0 +1,190 @@
+/* Not encapsulated (the lesson HTML comes from a file): everything is under .lesson. */
+
+.lesson {
+  max-width: 64rem;
+  margin: 0 auto;
+
+  &__bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px 24px;
+    margin-bottom: 24px;
+  }
+
+  &__count,
+  &__note {
+    color: var(--muted);
+    font-size: 0.9375rem;
+  }
+
+  &__note {
+    margin: 0 0 24px;
+  }
+
+  &__module {
+    margin: 0 0 4px;
+    color: var(--accent-text);
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  &__pager {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+
+    a {
+      display: flex;
+      flex: 1 1 240px;
+      flex-direction: column;
+      max-width: 48%;
+      padding: 12px 16px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      color: var(--ink);
+      font-weight: 600;
+      text-decoration: none;
+
+      &:hover {
+        border-color: var(--accent);
+        background: var(--accent-soft);
+      }
+
+      @media (max-width: 600px) {
+        max-width: 100%;
+      }
+    }
+  }
+
+  &__next {
+    margin-left: auto;
+    text-align: right;
+  }
+
+  &__direction {
+    color: var(--muted);
+    font-size: 0.8125rem;
+    font-weight: 400;
+  }
+}
+
+.lesson-body {
+  line-height: 1.65;
+  overflow-wrap: break-word;
+
+  h2 {
+    margin: 36px 0 12px;
+    font-size: 1.5rem;
+  }
+
+  h3 {
+    margin: 28px 0 8px;
+    font-size: 1.25rem;
+  }
+
+  h4 {
+    margin: 24px 0 8px;
+    font-size: 1.0625rem;
+  }
+
+  h2,
+  h3,
+  h4 {
+    strong {
+      font-weight: inherit;
+    }
+  }
+
+  p,
+  ul {
+    margin: 0 0 14px;
+  }
+
+  ul {
+    padding-left: 1.5rem;
+  }
+
+  li {
+    margin: 4px 0;
+  }
+
+  a {
+    color: var(--accent-text);
+    text-underline-offset: 2px;
+  }
+
+  .callout {
+    margin: 28px 0 4px;
+    color: var(--accent-text);
+    font-size: 0.8125rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+
+    + h2,
+    + h3 {
+      margin-top: 0;
+    }
+  }
+
+  code {
+    padding: 1px 5px;
+    border-radius: 3px;
+    background: #eef0f2;
+    font-family: ui-monospace, 'Cascadia Code', Consolas, 'Roboto Mono', monospace;
+    font-size: 0.875em;
+  }
+
+  pre {
+    margin: 0 0 18px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: #f6f8fa;
+    line-height: 1.5;
+
+    code {
+      padding: 0;
+      background: none;
+      font-size: 0.875rem;
+    }
+  }
+
+  img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 12px 0;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+  }
+
+  .table-wrap {
+    margin: 0 0 18px;
+    overflow-x: auto;
+  }
+
+  table {
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+    padding: 6px 12px;
+    border: 1px solid var(--line);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    background: var(--accent-soft);
+  }
+}

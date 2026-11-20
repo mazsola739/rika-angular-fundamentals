@@ -1,0 +1,85 @@
+<p class="callout"><strong>INFO</strong></p>
+<h2><a href="https://rxjs-dev.firebaseapp.com/guide/subject" target="_blank" rel="noopener noreferrer"><strong>Official RxJS documentation</strong></a><strong>.</strong></h2>
+<p class="callout"><strong>TIP</strong></p>
+<h2><a href="https://css-tricks.com/animated-intro-rxjs/" target="_blank" rel="noopener noreferrer"><strong>Animated introduction to RxJs</strong></a><strong>.</strong></h2>
+<p class="callout"><strong>VIDEO</strong></p>
+<h3><strong>Watch a video on theis topic:</strong></h3>
+<p><a href="https://www.linkedin.com/learning/learning-rxjs/evolution-of-asynchronous-programming?autoplay=true&amp;resume=false&amp;u=2113185" target="_blank" rel="noopener noreferrer">Evolution of asynchronous programming</a></p>
+<h2><strong>What is RxJS?</strong></h2>
+<p>RxJS (Reactive Extensions for JavaScript) is a library for reactive programming using observables that makes it easier to compose asynchronous or callback-based code.</p>
+<p>RxJS provides an implementation of the Observable type, which is needed until the type becomes part of the language and until browsers support it. The library also provides utility functions for creating and working with observables. These utility functions can be used for:</p>
+<ul><li>Converting existing code for async operations into observables
+</li><li>Iterating through the values in a stream
+</li><li>Mapping values to different types
+</li><li>Filtering streams
+</li><li>Composing multiple streams
+</li></ul>
+<h2><strong>How to Install and Use RxJS</strong></h2>
+<p>RxJS is a JavaScript library which means you can install it in the same way you install other libraries:</p>
+<h3><strong>Using RxJS with ES6 via npm</strong></h3>
+<p>In your project, you can run the following command to install RxJS:</p>
+<pre><code>npm install rxjs</code></pre>
+<p>You can then import the symbols you want to use from the <code>rxjs</code> package or a sub-package such as <code>rxjs/operators</code>:</p>
+<pre><code>import { Observable, Subscriber } from &quot;rxjs&quot;;
+import { tap, map, filter } from &quot;rxjs/operators&quot;;</code></pre>
+<h3><strong>Using RxJS from a CDN</strong></h3>
+<p>You can also use RxJS from a CDN using a <code>&lt;script&gt;</code> in your HTML document:</p>
+<pre><code>&lt;script src=&quot;https://unpkg.com/rxjs/bundles/rxjs.umd.min.js&quot;&gt;&lt;/script&gt;</code></pre>
+<p class="callout"><strong>NOTE</strong></p>
+<p>Please note that in Angular 6+, RxJS is already included in your project so you don&#x27;t need to install it manually.</p>
+<h2><strong>Observable</strong></h2>
+<p>An observable is a function that creates an observer and attaches it to the source where values are expected, for example, clicks, mouse events from a dom element or an Http request, etc.</p>
+<h2><strong>Observer</strong></h2>
+<p>It is an object with next(), error() and complete() methods, that will get called when there is interaction to the with the observable i.e. the source interacts for an example button click, Http request, etc. In simple word observable represents async stream of data and observer subscribes to the observable to receive the stream.</p>
+<p><img src="course-lessons/img/image21.webp" alt="Observable"></p>
+<h2><strong>Subscription</strong></h2>
+<p>When the observable is created, to execute the observable we need to subscribe to it. It can also be used to cancel the execution. <code>Subscribe</code> function starts the stream from observable to the observer function. You can see in the below code how the subscribe function takes a function as reference. So when data is streamed from Observable its received by the Listener function.</p>
+<pre><code>let observ = Observable.create(AsyncStream);
+observ.subscribe((res) =&gt; Listener(res));
+
+function Listener(res) {
+ console.log(res);
+}</code></pre>
+<h2><strong>Subject</strong></h2>
+<p>A subject is an observable that can multicast i.e. talk to many observers. Consider a button with an event listener, the function attached to the event using addlistener is called every time the user clicks on the button similar functionality goes for subject too. A Subject is both an <code>Observable</code> and an <code>Observer</code> that allows values to be multicasted to many Observers, unlike Observables, where each subscriber owns an independent execution of the Observable. That means:</p>
+<ul><li>you can subscribe to a Subject to pull values from its stream
+</li><li>you can feed values to the stream by calling the method <code>next()</code>
+</li><li>you can even pass a Subject as an Observer to an Observable: as mentioned above, a Subject is also an Observer, and as a such, it implements the methods <code>next</code>, <code>error</code> and <code>complete</code>
+</li></ul>
+<p>Let’s see a quick example:</p>
+<pre><code>const subject$ = new Subject();
+// Pull values
+subject$.subscribe(console.log, null, () =&gt; console.log(&quot;Complete!&quot;));
+// Push values
+subject$.next(&quot;Hello World&quot;);
+// Use Subject as an Observer
+const numbers$ = of(1, 2, 3);
+numbers$.subscribe(subject$);
+/* Output below */
+// Hello Word
+// 1
+// 2
+// 3
+// Complete!</code></pre>
+<h2><strong>Schedulers</strong></h2>
+<p>Schedulers are entities that control when a subscription starts and when notifications are delivered. It has 3 components:</p>
+<ul><li><em>data structure</em> — It knows how to store and queue tasks based on priority or other criteria.
+</li><li><em>execution context</em> — denotes where and when tasks are executed. It can be immediate or deferred until later.
+</li><li><em>virtual clock</em> — tasks are run relative to the time denoted by the now() getter method on the scheduler.
+</li></ul>
+<p>We can define a basic scheduler as follows:</p>
+<pre><code>import { of, asyncScheduler } from &quot;rxjs&quot;;
+import { observeOn } from &quot;rxjs/operators&quot;;
+
+of(1, 2, 3)
+ .pipe(observeOn(asyncScheduler))
+ .subscribe((val) =&gt; console.log(val));</code></pre>
+<p>The code turns our synchronous Observable into an asynchronous Observable by using the <code>asyncScheduler</code>.</p>
+<h2><strong>Summary</strong></h2>
+<p>You may use RxJS if your project consists of lots of async task handling than RxJS is a good choice. It is loaded by default with the Angular project.</p>
+<p>The following are the advantages of using RxJS:</p>
+<ul><li>RxJS can be used with other Javascript libraries and frameworks. It is supported by javascript and also with typescript.Few examples are Angular, ReactJS, Vuejs, nodejs etc.
+</li><li>RxJS is an awesome library when it comes to the handling of async tasks.RxJS uses observables to work with reactiveprogramming that deals with asynchronous data calls, callbacks and event-based programs.
+</li><li>RxJS offers a huge collection of operators in mathematical, transformation, filtering, utility, conditional, errorhandling, join categories that makes life easy when used with reactive programming.
+</li></ul>
+<h2><strong>Watch it! 🎥</strong></h2>

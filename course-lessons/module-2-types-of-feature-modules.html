@@ -1,0 +1,47 @@
+<p class="callout"><strong>INFO</strong></p>
+<h3><strong>Original article: </strong><a href="https://angular.io/guide/module-types#domain" target="_blank" rel="noopener noreferrer"><strong>Guidelines for creating </strong></a><a href="https://angular.io/guide/module-types#domain" target="_blank" rel="noopener noreferrer"><em><strong>NgModules</strong></em></a><strong>.</strong></h3>
+<p>This topic provides a conceptual overview of the different categories of <em>NgModules</em> you can create in order to organize your code in a modular structure. These categories are not cast in stone — they are suggestions. You may want to create <em>NgModules</em> for other purposes, or combine the characteristics of some of these categories.</p>
+<p><em>NgModules</em> are a great way to organize an application and keep code related to a specific functionality or feature separate from other code. Use <em>NgModules</em> to consolidate components, directives, and pipes into cohesive blocks of functionality. Focus each block on a feature or business domain, a workflow or navigation flow, a common collection of utilities, or one or more providers for services.</p>
+<h3><strong>Summary of NgModule categories</strong></h3>
+<p>All applications start by bootstrapping a root <em>NgModule</em>. You can organize your other <em>NgModules</em> any way you want.</p>
+<p>This topic provides some guidelines for the following general categories of <em>NgModules</em> :</p>
+<ul><li><em><strong>Domain:</strong></em> A domain <em>NgModule</em> is organized around a feature, business domain, or user experience.
+</li><li><em><strong>Routed:</strong></em> The top component of the <em>NgModule</em> acts as the destination of a router navigation route.
+</li><li><em><strong>Routing:</strong></em> A routing <em>NgModule</em> provides the routing configuration for another <em>NgModule</em>.
+</li><li><em><strong>Service:</strong></em> A service <em>NgModule</em> provides utility services such as data access and messaging.
+</li><li><em><strong>Widget:</strong></em> A widget <em>NgModule</em> makes a component, directive, or pipe available to other <em>NgModules</em>.
+</li><li><em><strong>Shared:</strong></em> A shared <em>NgModule</em> makes a set of components, directives, and pipes available to other <em>NgModules</em>.
+</li></ul>
+<p>The following table summarizes the key characteristics of each category.</p>
+<div class="table-wrap"><table><tr><th><em><strong>NgModule</strong></em></th><th><strong>Declarations</strong></th><th><strong>Providers</strong></th><th><strong>Exports</strong></th><th><strong>Imported by</strong></th></tr><tr><td>Domain</td><td>Yes</td><td>Rare</td><td>Top component</td><td>Another domain, AppModule</td></tr><tr><td>Routed</td><td>Yes</td><td>Rare</td><td>No</td><td>None</td></tr><tr><td>Routing</td><td>No</td><td>Yes (Guards)</td><td>RouterModule</td><td>Another domain (for routing)</td></tr><tr><td>Service</td><td>No</td><td>Yes</td><td>No</td><td>AppModule</td></tr><tr><td>Widget</td><td>Yes</td><td>Rare</td><td>Yes</td><td>Another domain</td></tr><tr><td>Shared</td><td>Yes</td><td>No</td><td>Yes</td><td>Another domain</td></tr></table></div>
+<h3><strong>Domain NgModules</strong></h3>
+<p>Use a domain <em>NgModule</em> to deliver a user experience dedicated to a particular feature or application domain, such as editing a customer or placing an order.</p>
+<p>A domain <em>NgModule</em> organizes the code related to a certain function, containing all of the components, routing, and templates that make up the function. Your top component in the domain <em>NgModule</em> acts as the feature or domain&#x27;s root, and is the only component you export. Private supporting subcomponents descend from it.</p>
+<p>Import a domain <em>NgModule</em> exactly once into another NgModule, such as a domain NgModule, or into the root NgModule (<code>AppModule</code>) of an application that contains only a few <em>NgModules</em>.</p>
+<p>Domain <em>NgModules</em> consist mostly of declarations. You rarely include providers. If you do, the lifetime of the provided services should be the same as the lifetime of the <em>NgModule</em>.</p>
+<h3><strong>Routed NgModules</strong></h3>
+<p>Use a routed <em>NgModule</em> for all lazy-loaded <em>NgModules</em>. Use the top component of the <em>NgModule</em> as the destination of a router navigation route. Routed <em>NgModules</em> don’t export anything because their components never appear in the template of an external component.</p>
+<p class="callout"><strong>CAUTION</strong></p>
+<p>Don&#x27;t import a lazy-loaded routed <em>NgModule</em> into another NgModule, as this would trigger an eager load, defeating the purpose of lazy loading.</p>
+<p>Routed <em>NgModules</em> rarely have providers because you load a routed <em>NgModule</em> only when needed (such as for routing). Services listed in the <em>NgModules</em> <code>provider</code> array would not be available because the root injector wouldn’t know about the lazy-loaded <em>NgModule</em>. If you include providers, the lifetime of the provided services should be the same as the lifetime of the <em>NgModule</em>. Don&#x27;t provide app-wide singleton services in a routed <em>NgModule</em> or in an NgModule that the routed <em>NgModule</em> imports.</p>
+<h3><strong>Routing NgModules</strong></h3>
+<p>Use a routing <em>NgModule</em> to provide the routing configuration for a domain NgModule, thereby separating routing concerns from its companion domain <em>NgModule</em>.</p>
+<p>Use a routing <em>NgModule</em> to do the following tasks:</p>
+<ul><li>Define routes.
+</li><li>Add router configuration to the NgModule&#x27;s import.
+</li><li>Add guard and resolver service providers to the NgModule&#x27;s providers.
+</li></ul>
+<p>The name of the routing <em>NgModule</em> should parallel the name of its companion NgModule, using the suffix <code>Routing</code>.</p>
+<p>Import a routing <em>NgModule</em> only into its companion <em>NgModule</em>. If the companion <em>NgModule</em> is the root <code>AppModule</code>, the <code>AppRoutingModule</code> adds router configuration to its imports with <code>RouterModule.forRoot(routes)</code>. All other routing <em>NgModules</em> are children that import <code>RouterModule.forChild(routes)</code>.</p>
+<p>In your routing NgModule, re-export the <code>RouterModule</code> as a convenience so that components of the companion NgModule have access to router directives such as <code>RouterLink</code> and <code>RouterOutlet</code>.</p>
+<p class="callout"><strong>CAUTION</strong></p>
+<p>Don&#x27;t use declarations in a routing <em>NgModule</em>. Components, directives, and pipes are the responsibility of the companion domain <em>NgModule</em>, not the routing <em>NgModule</em>.</p>
+<h3><strong>Service NgModules</strong></h3>
+<p>Use a service <em>NgModule</em> to provide a utility service such as data access or messaging. Ideal service <em>NgModules</em> consist entirely of providers and have no declarations. Angular&#x27;s <code>HttpClientModule</code> is a good example of a service <em>NgModule</em>.</p>
+<p>Use only the root AppModule to import service <em>NgModules</em> .</p>
+<h3><strong>Widget NgModules</strong></h3>
+<p>Use a widget <em>NgModule</em> to make a component, directive, or pipe available to external <em>NgModules</em> . Import widget <em>NgModules</em> into any <em>NgModules</em> that need the widgets in their templates. Many third-party UI component libraries are provided as widget <em>NgModules</em> .</p>
+<p>A widget <em>NgModule</em> should consist entirely of declarations, most of them exported. It would rarely have providers.</p>
+<h3><strong>Shared NgModules</strong></h3>
+<p>Put commonly used directives, pipes, and components into one NgModule, typically named <code>SharedModule</code>, and then import just that <em>NgModule</em> wherever you need it in other parts of your application. You can import the shared <em>NgModule</em> in your domain <em>NgModules</em> , including lazy-loaded <em>NgModules</em> .</p>
+<p>Shared <em>NgModules</em> should not include providers, nor should any of its imported or re-exported <em>NgModules</em> include providers.</p>

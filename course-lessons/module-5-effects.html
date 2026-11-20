@@ -1,0 +1,339 @@
+<p>Effects are an RxJS powered side effect model for Store. Effects use streams to provide new sources of actions to reduce state based on external interactions such as network requests, web socket messages and time-based events.</p>
+<h2><strong>Introduction</strong></h2>
+<p>In a service-based Angular application, components are responsible for interacting with external resources directly through services. Instead, effects provide a way to interact with those services and isolate them from the components. Effects are where you handle tasks such as fetching data, long-running tasks that produce multiple events, and other external interactions where your components don&#x27;t need explicit knowledge of these interactions.</p>
+<h2><strong>Key Concepts</strong></h2>
+<ul><li>Effects isolate side effects from components, allowing for more pure components that select state and dispatch actions.
+</li><li>Effects are long-running services that listen to an observable of every action dispatched from the Store.
+</li><li>Effects filter those actions based on the type of action they are interested in. This is done by using an operator.
+</li><li>Effects perform tasks, which are synchronous or asynchronous and return a new action.
+</li></ul>
+<h2><strong>Installation</strong></h2>
+<h3><strong>Installing with npm</strong></h3>
+<p>For more information on using <code>npm</code> check out the docs <a href="https://docs.npmjs.com/cli/install" target="_blank" rel="noopener noreferrer">here</a>.</p>
+<pre><code>npm install @ngrx/effects --save</code></pre>
+<h3><strong>Installing with yarn</strong></h3>
+<p>For more information on using <code>yarn</code> check out the docs <a href="https://yarnpkg.com/docs/usage" target="_blank" rel="noopener noreferrer">here</a>.</p>
+<pre><code>yarn add @ngrx/effects</code></pre>
+<h3><strong>Installing with ng add</strong></h3>
+<p>If your project is using the Angular CLI 6+ then you can install the Store to your project with the following <code>ng add</code> command <a href="https://angular.io/cli/add" target="_blank" rel="noopener noreferrer">(details here)</a>:</p>
+<pre><code>ng add @ngrx/effects@latest</code></pre>
+<h3><strong>Optional ng add flags</strong></h3>
+<ul><li>path - path to the module that you wish to add the import for the <code>StoreModule</code> to.
+</li><li>flat - Indicate if a directory is to be created to hold your effects file
+</li><li>skipTests - When true, does not create test files.
+</li><li>project - name of the project defined in your <code>angular.json</code> to help locating the module to add the <code>EffectsModule</code> to.
+</li><li>module - name of file containing the module that you wish to add the import for the <code>EffectsModule</code> to. Can also include the relative path to the file. For example, <code>src/app/app.module.ts</code>
+</li><li>minimal - By default true, only provide minimal setup for the root effects setup. Only registers <code>EffectsModule.forRoot()</code> in the provided <code>module</code> with an empty array.
+</li><li>group - Group effects file within <code>effects</code> folder
+</li></ul>
+<p>This command will automate the following steps:</p>
+<ul><li>Update <code>package.json</code> &gt; <code>dependencies</code> with <code>@ngrx/effects</code>.
+</li><li>Run <code>npm install</code> to install those dependencies.
+</li><li>Update your <code>src/app/app.module.ts</code> &gt; <code>imports</code> array with <code>EffectsModule.forRoot([AppEffects])</code>. If you provided flags then the command will attempt to locate and update module found by the flags.
+</li></ul>
+<h2><strong>Comparison with component-based side effects</strong></h2>
+<p>In a service-based application, your components interact with data through many different services that expose data through properties and methods. These services may depend on other services that manage other sets of data. Your components consume these services to perform tasks, giving your components many responsibilities.</p>
+<p>Imagine that your application manages movies. Here is a component that fetches and displays a list of movies.</p>
+<p>src/app/movies-page/movies-page.component.ts</p>
+<pre><code>@Component({
+ selector: &#x27;movies-page&#x27;,
+ templateUrl: &#x27;./movies-page.component.html&#x27;,
+ styleUrls: [&#x27;./movies-page.component.css&#x27;],
+})
+export class MoviesPageComponent implements OnInit {
+ movies: Movie[];
+
+ constructor(private movieService: MoviesService) {}
+
+ ngOnInit() {
+   this.movieService.getAll().subscribe(movies =&gt; this.movies = movies);
+ }
+}</code></pre>
+<p>src/app/movies-page/movies-page.component.html</p>
+<pre><code>&lt;div class=&quot;container&quot;&gt;
+ &lt;div class=&quot;movie&quot; *ngFor=&quot;let movie of (movies$ | async).movies&quot;&gt;
+   &lt;div class=&quot;name&quot;&gt;{{ movie.name }}&lt;/div&gt;
+   &lt;img [src]=&quot;movie.image&quot; width=&quot;150&quot; height=&quot;200&quot; /&gt;
+   &lt;div class=&quot;rate&quot;&gt;Rate: {{ movie.rate }} / 10&lt;/div&gt;
+ &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+<p>You also have the corresponding service that handles the fetching of movies.</p>
+<p>src/app/movies.service.ts</p>
+<pre><code>import { Injectable } from &quot;@angular/core&quot;;
+import { Observable, of } from &quot;rxjs&quot;;
+import { Movie } from &quot;./entities/movie&quot;;
+
+@Injectable({
+ providedIn: &quot;root&quot;,
+})
+export class MoviesService {
+ constructor() {}
+
+ getAll(): Observable&lt;Movie[]&gt; {
+   const harryPotterImg: string =
+     &quot;https://static.posters.cz/image/750webp/104639.webp&quot;;
+   const theDarkKnightImg: string =
+     &quot;https://static.posters.cz/image/750webp/13945.webp&quot;;
+   const lalalendImg: string =
+     &quot;https://as1.ftcdn.net/v2/jpg/03/07/32/52/1000_F_307325243_JXCk1BIPWZR4NJxqxPnPGU64UrXmzmA8.jpg&quot;;
+   const attackonTitanImg: string =
+     &quot;https://static.posters.cz/image/350webp/22808.webp&quot;;
+
+   const mockData: Movie[] = [
+     new Movie(&quot;Harry Potter&quot;, harryPotterImg, &quot;7.6&quot;),
+     new Movie(&quot;The Dark Knight&quot;, theDarkKnightImg, &quot;9.1&quot;),
+     new Movie(&quot;Lalalend&quot;, lalalendImg, &quot;8&quot;),
+     new Movie(&quot;Attack on Titan&quot;, attackonTitanImg, &quot;9.1&quot;),
+   ];
+   return of(mockData);
+ }
+}</code></pre>
+<p>The component has multiple responsibilities:</p>
+<ul><li>Managing the state of the movies.
+</li><li>Using the service to perform a side effect, reaching out to an external API to fetch the movies.
+</li><li>Changing the state of the movies within the component.
+</li></ul>
+<p>Let&#x27;s Add <code>Actions</code> and <code>Reducer</code> for Movie State</p>
+<p>src/app/state/movie.actions.ts</p>
+<pre><code>export const getMoviesList = createAction(&#x27;[Movies Page] Load Movies&#x27;);
+export const getMoviesListSuccess = createAction(&#x27;[Movies Page] Load Movies Success&#x27;, props&lt;{ movies: Movie[] }&gt;());
+export const getMoviesListFailure = createAction(&#x27;[Movies Page] Load Movies Failure&#x27;);</code></pre>
+<p>src/app/state/movie.reducer.ts</p>
+<pre><code>export interface State {
+ movies: Movie[];
+}
+
+export const initialState: State = {
+ movies: [],
+};
+
+export const moviesReducer = createReducer(
+ initialState,
+ on(getMoviesList, (state) =&gt; ({ ...state })),
+ on(getMoviesListSuccess, (state, { movies }) =&gt; ({
+   ...state,
+   movies: movies,
+ })),
+ on(getMoviesListFailure, (state) =&gt; ({ ...state }))
+);</code></pre>
+<p><code>Effects</code> when used along with <code>Store</code>, decrease the responsibility of the component. In a larger application, this becomes more important because you have multiple sources of data, with multiple services required to fetch those pieces of data, and services potentially relying on other services.</p>
+<p>Effects handle external data and interactions, allowing your services to be less stateful and only perform tasks related to external interactions. Next, refactor the component to put the shared movie data in the <code>Store</code>. Effects handle the fetching of movie data.</p>
+<p>src/app/movies-page/movies-page.component.ts</p>
+<pre><code>@Component({
+ selector: &quot;movies-page&quot;,
+ templateUrl: &quot;./movies-page.component.html&quot;,
+ styleUrls: [&quot;./movies-page.component.css&quot;],
+})
+export class MoviesPageComponent implements OnInit {
+ movies$: Observable&lt;any&gt; = this.store.select(&quot;movies&quot;);
+
+ constructor(private store: Store&lt;{ movies: Movie[] }&gt;) {}
+
+ ngOnInit() {
+   this.store.dispatch(getMoviesList());
+ }
+}</code></pre>
+<p>The movies are still fetched through the <code>MoviesService</code>, but the component is no longer concerned with how the movies are fetched and loaded. It&#x27;s only responsible for declaring its intent to load movies and using selectors to access movie list data. Effects are where the asynchronous activity of fetching movies happens. Your component becomes easier to test and less responsible for the data it needs.</p>
+<h2><strong>Writing Effects</strong></h2>
+<p>To isolate side-effects from your component, you must create an <code>Effects</code> class to listen for events and perform tasks.</p>
+<p>Effects are injectable service classes with distinct parts:</p>
+<ul><li>An injectable Actions service that provides an observable stream of all actions dispatched after the latest state has been reduced.
+</li><li>Metadata is attached to the observable streams using the createEffect function. The metadata is used to register the streams that are subscribed to the store. Any action returned from the effect stream is then dispatched back to the Store.
+</li><li>Actions are filtered using a pipeable ofType operator. The ofType operator takes one or more action types as arguments to filter on which actions to act upon.
+</li><li>Effects are subscribed to the Store observable.
+</li><li>Services are injected into effects to interact with external APIs and handle streams.
+</li></ul>
+<p>To show how you handle loading movies from the example above, let&#x27;s look at <code>MovieEffects</code>.</p>
+<p>src/app/state/movie.effects.ts</p>
+<pre><code>import { Injectable } from &#x27;@angular/core&#x27;;
+import { Actions, createEffect, ofType } from &#x27;@ngrx/effects&#x27;;
+import { EMPTY } from &#x27;rxjs&#x27;;
+import { map, mergeMap, catchError } from &#x27;rxjs/operators&#x27;;
+import { MoviesService } from &#x27;./movies.service&#x27;;
+import { getMoviesList, getMoviesListSuccess } from &#x27;./movie.actions&#x27;;
+
+@Injectable()
+export class MovieEffects {
+
+ loadMovies$ = createEffect(() =&gt; this.actions$.pipe(
+   ofType(getMoviesList),
+   mergeMap(() =&gt; this.moviesService.getAll()
+     .pipe(
+       map(movies =&gt; (getMoviesListSuccess({movies: movies}) )),
+       catchError(() =&gt; EMPTY)
+     ))
+   )
+ );
+
+ constructor(
+   private actions$: Actions,
+   private moviesService: MoviesService
+ ) {}
+}</code></pre>
+<p>The <code>loadMovies$</code> effect is listening for all dispatched actions through the <code>Actions</code> stream, but is only interested in the <code>[Movies Page] Load Movies</code> event using the <code>ofType</code> operator. The stream of actions is then flattened and mapped into a new observable using the <code>mergeMap</code> operator. The <code>MoviesService#getAll()</code> method returns an observable that maps the movies to a new action on success, and currently returns an empty observable if an error occurs. The action is dispatched to the <code>Store</code> where it can be handled by reducers when a state change is needed. It&#x27;s also important to handle errors when dealing with observable streams so that the effects continue running.</p>
+<p class="callout"><strong>NOTE</strong></p>
+<p>Event streams are not limited to dispatched actions, but can be any observable that produces new actions, such as observables from the Angular Router, observables created from browser events, and other observable streams.</p>
+<p class="callout"><strong>NOTE</strong></p>
+<p>You can also write effects using the @Effect() decorator, which was the previously defined way before effects creators were introduced in NgRx. If you are looking for examples of effect decorators, visit the documentation for versions 7.x and prior.</p>
+<h2><strong>Handling Errors</strong></h2>
+<p>Effects are built on top of observable streams provided by RxJS. Effects are listeners of observable streams that continue until an error or completion occurs. In order for effects to continue running in the event of an error in the observable, or completion of the observable stream, they must be nested within a &quot;flattening&quot; operator, such as <code>mergeMap</code>, <code>concatMap</code>, <code>exhaustMap</code> and other flattening operators. The example below shows the <code>loadMovies$</code> effect handling errors when fetching movies.</p>
+<pre><code>import { Injectable } from &#x27;@angular/core&#x27;;
+import { Actions, createEffect, ofType } from &#x27;@ngrx/effects&#x27;;
+import { of } from &#x27;rxjs&#x27;;
+import { map, mergeMap, catchError } from &#x27;rxjs/operators&#x27;;
+import { MoviesService } from &#x27;./movies.service&#x27;;
+import { getMoviesList, getMoviesListSuccess } from &#x27;./movie.actions&#x27;;
+
+@Injectable()
+export class MovieEffects {
+
+ loadMovies$ = createEffect(() =&gt;
+   this.actions$.pipe(
+     ofType(getMoviesList),
+     mergeMap(() =&gt; this.moviesService.getAll()
+       .pipe(
+         map(movies =&gt; (getMoviesListSuccess({movies: movies}) )),
+         catchError(() =&gt; of(getMoviesListFailure()))
+       )
+     )
+   )
+ );
+
+ constructor(
+   private actions$: Actions,
+   private moviesService: MoviesService
+ ) {}
+}</code></pre>
+<p>The <code>loadMovies$</code> effect returns a new observable in case an error occurs while fetching movies. The inner observable handles any errors or completions and returns a new observable so that the outer stream does not die. You still use the <code>catchError</code> operator to handle error events, but return an observable of a new action that is dispatched to the <code>Store</code>.</p>
+<h2><strong>Registering root effects</strong></h2>
+<p>After you&#x27;ve written your Effects class, you must register it so the effects start running. To register root-level effects, add the <code>EffectsModule.forRoot()</code> method with an array of your effects to your <code>AppModule</code>.</p>
+<p>app.module.ts</p>
+<pre><code>import { NgModule } from &quot;@angular/core&quot;;
+import { BrowserModule } from &quot;@angular/platform-browser&quot;;
+import { FormsModule } from &quot;@angular/forms&quot;;
+
+import { AppComponent } from &quot;./app.component&quot;;
+import { MoviesPageComponent } from &quot;./movies-page/movies-page.component&quot;;
+import { EffectsModule } from &quot;@ngrx/effects&quot;;
+import { MovieEffects } from &quot;./state/movie.effects&quot;;
+import { StoreModule } from &quot;@ngrx/store&quot;;
+import { moviesReducer } from &quot;./state/movie.reducer&quot;;
+
+@NgModule({
+ imports: [
+   BrowserModule,
+   FormsModule,
+   StoreModule.forRoot({ movies: moviesReducer }),
+   EffectsModule.forRoot([MovieEffects]),
+ ],
+ declarations: [AppComponent, MoviesPageComponent],
+ bootstrap: [AppComponent],
+})
+export class AppModule {}</code></pre>
+<p class="callout"><strong>NOTE</strong></p>
+<p>The <code>EffectsModule.forRoot()</code> method must be added to your <code>AppModule</code> imports even if you don&#x27;t register any root-level effects.</p>
+<p>Effects start running immediately after the AppModule is loaded to ensure they are listening for all relevant actions as soon as possible.</p>
+<h2><strong>Registering feature effects</strong></h2>
+<p>For feature modules, register your effects by adding the <code>EffectsModule.forFeature()</code> method in the <code>imports</code> array of your <code>NgModule</code>.</p>
+<p>admin.module.ts</p>
+<pre><code>import { EffectsModule } from &quot;@ngrx/effects&quot;;
+import { MovieEffects } from &quot;./effects/movie.effects&quot;;
+
+@NgModule({
+ imports: [EffectsModule.forFeature([MovieEffects])],
+})
+export class MovieModule {}</code></pre>
+<p class="callout"><strong>NOTE</strong></p>
+<p>Running an effects class multiple times, either by <code>forRoot()</code> or <code>forFeature()</code>, (for example via different lazy loaded modules) will not cause Effects to run multiple times. There is no functional difference between effects loaded by <code>forRoot()</code> and <code>forFeature()</code>; the important difference between the functions is that <code>forRoot()</code> sets up the providers required for effects.</p>
+<h2><strong>Alternative way of registering effects</strong></h2>
+<p>You can provide root-/feature-level effects with the provider <code>USER_PROVIDED_EFFECTS</code>.</p>
+<p>movies.module.ts</p>
+<pre><code>providers: [
+ MovieEffects,
+ {
+   provide: USER_PROVIDED_EFFECTS,
+   multi: true,
+   useValue: [MovieEffects],
+ },
+];</code></pre>
+<p class="callout"><strong>NOTE</strong></p>
+<p>The <code>EffectsModule.forFeature()</code> method must be added to the module imports even if you only provide effects over token, and don&#x27;t pass them via parameters. (Same goes for <code>EffectsModule.forRoot()</code>)</p>
+<h2><strong>Incorporating State</strong></h2>
+<p>If additional metadata is needed to perform an effect besides the initiating action&#x27;s <code>type</code>, we should rely on passed metadata from an action creator&#x27;s <code>props</code> method.</p>
+<p>Let&#x27;s look at an example of an action initiating a login request using an effect with additional passed metadata:</p>
+<p>login-page.actions.ts</p>
+<pre><code>import { createAction, props } from &#x27;@ngrx/store&#x27;;
+import { Credentials } from &#x27;../models/user&#x27;;
+
+export const login = createAction(
+ &#x27;[Login Page] Login&#x27;,
+ props&lt;{ credentials: Credentials }&gt;()
+);</code></pre>
+<p>auth.effects.ts</p>
+<pre><code>import { Injectable } from &#x27;@angular/core&#x27;;
+import { Actions, ofType, createEffect } from &#x27;@ngrx/effects&#x27;;
+import { of } from &#x27;rxjs&#x27;;
+import { catchError, exhaustMap, map } from &#x27;rxjs/operators&#x27;;
+import {
+ LoginPageActions,
+ AuthApiActions,
+} from &#x27;../actions&#x27;;
+import { Credentials } from &#x27;../models/user&#x27;;
+import { AuthService } from &#x27;../services/auth.service&#x27;;
+
+@Injectable()
+export class AuthEffects {
+ login$ = createEffect(() =&gt;
+   this.actions$.pipe(
+     ofType(LoginPageActions.login),
+     exhaustMap(action =&gt;
+       this.authService.login(action.credentials).pipe(
+         map(user =&gt; AuthApiActions.loginSuccess({ user })),
+         catchError(error =&gt; of(AuthApiActions.loginFailure({ error })))
+       )
+     )
+   )
+ );
+
+ constructor(
+   private actions$: Actions,
+   private authService: AuthService
+ ) {}
+}</code></pre>
+<p>The <code>login</code> action has additional <code>credentials</code> metadata which is passed to a service to log the specific user into the application.</p>
+<p>However, there may be cases when the required metadata is only accessible from state. When state is needed, the RxJS <code>withLatestFrom</code> or the @ngrx/effects <code>concatLatestFrom</code> operators can be used to provide it.</p>
+<p>The example below shows the <code>addBookToCollectionSuccess$</code> effect displaying a different alert depending on the number of books in the collection state.</p>
+<p>collection.effects.ts</p>
+<pre><code>import { Injectable } from &#x27;@angular/core&#x27;;
+import { Store } from &#x27;@ngrx/store&#x27;;
+import { Actions, ofType, createEffect, concatLatestFrom } from &#x27;@ngrx/effects&#x27;;
+import { tap } from &#x27;rxjs/operators&#x27;;
+import { CollectionApiActions } from &#x27;../actions&#x27;;
+import * as fromBooks from &#x27;../reducers&#x27;;
+
+@Injectable()
+export class CollectionEffects {
+ addBookToCollectionSuccess$ = createEffect(
+   () =&gt;
+     this.actions$.pipe(
+       ofType(CollectionApiActions.addBookSuccess),
+       concatLatestFrom(action =&gt; this.store.select(fromBooks.getCollectionBookIds)),
+       tap(([action, bookCollection]) =&gt; {
+         if (bookCollection.length === 1) {
+           window.alert(&#x27;Congrats on adding your first book!&#x27;);
+         } else {
+           window.alert(&#x27;You have added book number &#x27; + bookCollection.length);
+         }
+       })
+     ),
+   { dispatch: false }
+ );
+
+ constructor(
+   private actions$: Actions,
+   private store: Store&lt;fromBooks.State&gt;
+ ) {}
+}</code></pre>
+<p class="callout"><strong>NOTE</strong></p>
+<p>For performance reasons, use a flattening operator like concatLatestFrom to prevent the selector from firing until the correct action is dispatched.</p>
+<h2><strong>Try it out!</strong></h2>

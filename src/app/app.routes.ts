@@ -32,6 +32,11 @@ export const routes: Routes = [
   },
   { path: 'about', title: 'About', loadComponent: () => import('./features/about/about') },
   {
+    path: 'lessons/:slug',
+    title: 'Lesson',
+    loadComponent: () => import('./features/lessons/lesson'),
+  },
+  {
     path: 'tasks/:sheet',
     title: 'Task sheet',
     loadComponent: () => import('./features/task-sheets/task-sheet'),

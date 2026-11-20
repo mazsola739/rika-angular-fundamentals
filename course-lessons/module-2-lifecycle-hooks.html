@@ -1,0 +1,162 @@
+<p class="callout"><strong>INFO</strong></p>
+<h3><strong>Original article: </strong><a href="https://angular.io/guide/lifecycle-hooks" target="_blank" rel="noopener noreferrer"><strong>Lifecycle hooks</strong></a><strong>.</strong></h3>
+<p>A component instance has a lifecycle that starts when Angular instantiates the component class and renders the component view along with its child views. The lifecycle continues with change detection, as Angular checks to see when data-bound properties change, and updates both the view and the component instance as needed. The lifecycle ends when Angular destroys the component instance and removes its rendered template from the DOM. Directives have a similar lifecycle, as Angular creates, updates, and destroys instances in the course of execution.</p>
+<h3><strong>Responding to lifecycle events</strong></h3>
+<p>Respond to events in the lifecycle of a component or directive by implementing one or more of the lifecycle hook interfaces in the Angular <code>core</code> library. The hooks give you the opportunity to act on a component or directive instance at the appropriate moment, as Angular creates, updates, or destroys that instance.</p>
+<p>Each interface defines the prototype for a single hook method, whose name is the interface name prefixed with <code>ng</code>. For example, the <code>OnInit</code> interface has a hook method named <code>ngOnInit()</code>. If you implement this method in your component or directive class, Angular calls it shortly after checking the input properties for that component or directive for the first time.</p>
+<pre><code>@Component({
+ selector: &quot;app-hello-world&quot;,
+ templateUrl: &quot;./hello-world.component.html&quot;,
+ styleUrls: &quot;./hello-world.component.css&quot;,
+})
+export class HelloWorldComponent implements OnInit {
+ // implement OnInit&#x27;s `ngOnInit` method
+ ngOnInit() {
+   // Do some action
+ }
+}</code></pre>
+<p>You don&#x27;t have to implement all (or any) of the lifecycle hooks, just the ones you need.</p>
+<h3><strong>Lifecycle event sequence</strong></h3>
+<p>After your application instantiates a component or directive by calling its constructor, Angular calls the hook methods you have implemented at the appropriate point in the lifecycle of that instance.</p>
+<p>Angular executes hook methods in the following sequence. Use them to perform the following kinds of operations.</p>
+<p><img src="course-lessons/img/image15.webp" alt="Http_async"></p>
+<div class="table-wrap"><table><tr><th><strong>Hook method</strong></th><th><strong>Purpose</strong></th><th><strong>Timing</strong></th></tr><tr><td><code>ngOnChanges()</code></td><td>Respond when Angular sets or resets data-bound input properties. The method receives a <code>SimpleChanges</code> object of current and previous property values. Note that this happens very frequently, so any operation you perform here impacts performance significantly.</td><td>Called before <code>ngOnInit()</code> (if the component has bound inputs) and whenever one or more data-bound input properties change. Note that if your component has no inputs or you use it without providing any inputs, the framework will not call <code>ngOnChanges()</code>.</td></tr><tr><td><code>ngOnInit()</code></td><td>Initialize the directive or component after Angular first displays the data-bound properties and sets the directive or component&#x27;s input properties.</td><td>Called once, after the first <code>ngOnChanges()</code>. <code>ngOnInit()</code> is still called even when <code>ngOnChanges()</code> is not (which is the case when there are no template-bound inputs).</td></tr><tr><td><code>ngDoCheck()</code></td><td>Detect and act upon changes that Angular can&#x27;t or won&#x27;t detect on its own.</td><td>Called immediately after <code>ngOnChanges()</code> on every change detection run, and immediately after <code>ngOnInit()</code> on the first run.</td></tr><tr><td><code>ngAfterContentInit()</code></td><td>Respond after Angular projects external content into the component&#x27;s view, or into the view that a directive is in.</td><td>Called once after the first <code>ngDoCheck()</code>.</td></tr><tr><td><code>ngAfterContentChecked()</code></td><td>Respond after Angular checks the content projected into the directive or component.</td><td>Called after <code>ngAfterContentInit()</code> and every subsequent <code>ngDoCheck()</code>.</td></tr><tr><td><code>ngAfterViewInit()</code></td><td>Respond after Angular initializes the component&#x27;s views and child views, or the view that contains the directive.</td><td>Called once after the first <code>ngAfterContentChecked()</code>.</td></tr><tr><td><code>ngAfterViewChecked()</code></td><td>Respond after Angular checks the component&#x27;s views and child views, or the view that contains the directive.</td><td>Called after the <code>ngAfterViewInit()</code> and every subsequent <code>ngAfterContentChecked()</code>.</td></tr><tr><td><code>ngOnDestroy()</code></td><td>Cleanup just before Angular destroys the directive or component. Unsubscribe Observables and detach event handlers to avoid memory leaks.</td><td>Called immediately before Angular destroys the directive or component.</td></tr></table></div>
+<h3><strong>Use of Constructor in angular application</strong></h3>
+<p>A constructor is a special method that will be called whenever we create new objects. It is a feature of the class(typescript) itself, an object-oriented design concept. A constructor is also used to initialize the class members.</p>
+<pre><code>@Component({
+ //…
+})
+export class ExampleComponent {
+ constructor() {}
+}</code></pre>
+<p>We must have to use the constructor to inject dependencies in the angular component. Angular always executes the constructor method first then all lifecycle hooks will come into the picture.</p>
+<h3><strong>ngOnChanges()</strong></h3>
+<p>When any data-bound property of a directive or component changes, the OnChanges lifecycle hook is called. Let&#x27;s have a look into example:</p>
+<p>src/app/example.component.ts</p>
+<pre><code>@Component({
+ selector: &quot;example&quot;,
+ template: `&lt;div *ngFor=&quot;let customer of customers&quot;&gt;{{ customer }}&lt;/div&gt;`,
+})
+export class ExampleComponent implements OnChanges {
+ @Input() customers;
+
+ ngOnChanges() {
+   console.log(&quot;The property of customer changed&quot;);
+ }
+}</code></pre>
+<p>src/app/app.component.ts</p>
+<pre><code>@Component({
+ selector: &#x27;my-app&#x27;,
+ templateUrl: &#x27;./app.component.html&#x27;
+})
+
+export class AppComponent {
+ customers = [“Customer1”];
+}</code></pre>
+<p>src/app/app.component.html</p>
+<pre><code>&lt;example [customers]=&quot;customers&quot;&gt;&lt;/example&gt;</code></pre>
+<p>Here we have used interface <code>OnChanges</code> on ExampleComponent and called method <code>ngOnChanges()</code> which will call the <code>OnChanges</code> lifecycle hook. AppComponent is binding its customers property to ExampleComponent. On change of customers property from AppComponent, <code>ngOnChanges()</code> method of ExampleComponent will call. In short, every change of <code>@Input</code> value will call <code>ngOnChanges()</code> lifecycle hook.</p>
+<h3><strong>ngOnInit()</strong></h3>
+<p>This lifecycle hook is the most usable hook as we can initialize all methods and variables here in it. When we need to initialize any method where we can have the logic of getting initial data for a component then we can use <code>ngOnInit()</code> to call that method. This lifecycle hook will implement after all data bound properties to get called so we will have all properties to use initially. Basically, this lifecycle hook will call once and after <code>ngOnChanges()</code> called initially.</p>
+<pre><code>@Component({
+ selector: &quot;example&quot;,
+})
+export class ExampleComponent implements OnInit {
+ ngOnInit() {
+   console.log(&quot;This is OnInit lifecycle hook&quot;);
+ }
+}</code></pre>
+<h3><strong>Difference between constructor and ngOnInit</strong></h3>
+<p>The Constructor is executed when the class is instantiated as a default method of the class and ensures all initialization of fields in the class. Angular, or better Dependency Injector (DI), analyses the constructor parameters and when it creates a new instance by calling a new class() it tries to find providers that match the types of the constructor parameters, resolves them, and passes them to the constructor. <code>ngOnInit</code> is a life cycle hook called by Angular after data bound is done for the first time and angular is done creating the component. Implementing OnInit is not mandatory but considered good practice.</p>
+<pre><code>export class ExampleComponent implements OnInit {
+ constructor() {
+   // Called first time before the ngOnInit()
+ }
+
+ ngOnInit() {
+   // Called after the constructor and called after the first
+ }
+}</code></pre>
+<p>Mostly we use ngOnInit for all the initialization or declaration and avoid doing work in the constructor. The constructor should only be used to initialize class members but shouldn’t perform actual work.</p>
+<p>So you should use constructor() to set up Dependency Injection. ngOnInit() is a better place to “start” — it’s where the component&#x27;s bindings are resolved.</p>
+<h3><strong>ngDoCheck()</strong></h3>
+<p>This lifecycle hook comes after <code>ngOnInit()</code> and basically calls to detect and act upon changes that Angular can’t or won’t detect on its own. DoCheck invokes a custom change-detection function for a directive, in addition to the check performed by the default change-detector.</p>
+<pre><code>export class ExampleComponent implements OnChanges, DoCheck {
+ @Input() customers;
+
+ ngOnChanges() {
+   console.log(&#x27;The customers property has been changed&#x27;);
+ }
+
+ ngDoCheck() {
+   console.log(&#x27;ExampleCompoent&#x27;s ngDoCheck called.&#x27;);
+ }
+}</code></pre>
+<h3><strong>ngAfterContentInit()</strong></h3>
+<p><code>ngAfterContentInit()</code> is called when the content of a component has initialized. In this case, content is the component that are within the <code>&lt;ng-content&gt;&lt;/ng-content&gt;</code> tags. After <code>ngDoCheck()</code> it is called initially.</p>
+<p>src/app/example2.component.ts</p>
+<pre><code>@Component({
+ selector: &quot;example2&quot;,
+ template: `&lt;div&gt;This is a Example2 Componnet&lt;/div&gt;`,
+})
+export class Example2Component {}</code></pre>
+<p>src/app/example1.component.ts</p>
+<pre><code>@Component({
+ selector: &quot;example1&quot;,
+ template: `&lt;ng-content&gt;&lt;/ng-content&gt;`,
+})
+export class Example1Component implements AfterContentInit {
+ ngAfterContentInit() {}
+}</code></pre>
+<p>src/app/app.component.html</p>
+<pre><code>&lt;example1&gt;
+ &lt;example2&gt;&lt;/example2&gt;
+&lt;/example1&gt;</code></pre>
+<p>The Example1Component will have any elements in between its tag <code>&lt;example1&gt; &lt;/example1&gt;</code> inside the ng-content tag. Now, in the Examplecomponent, the Example2Component is projected in the example1 tag. When the Example2Component is being initialized, the ngAfterContentInit hook will be called in Example1Component.</p>
+<h3><strong>ngAfterContentChecked()</strong></h3>
+<p>This lifecycle hook performs its work by knowing the change in the content of the component using Angular change detection. It gets its call after <code>ngAftercontentInit()</code> and also gets executed after every execution od <code>ngDoCheck()</code>.</p>
+<pre><code>@Component({
+ selector: &quot;example1&quot;,
+ template: `&lt;ng-content&gt;&lt;/ng-content&gt;`,
+})
+export class Example1Component implements AfterContentInit {
+ ngAfterContentInit() {}
+}
+@Component({
+ template: `&lt;example1&gt; {{ data }} &lt;/example1&gt;`,
+})
+export class ExampleComponent implements AfterContentChecked {
+ data: any;
+
+ ngAfterContentChecked() {}
+}</code></pre>
+<p>The ExampleComponent component has a data property that is inside the Example1Component. When the data property changes, the <code>ngAfterContentChecked()</code> method will be called.</p>
+<h3><strong>ngAfterViewInit()</strong></h3>
+<p>This lifecycle hook gets called after <code>ngAfterContentChecked()</code>. And also gets called after a component’s view and its children’s views have been created and fully initialized. This lifecycle hook will be useful when we want to reference a component instance in our component using ViewChild/ViewChildren. After the initialization of view, it gets its call only once.</p>
+<pre><code>@Component({
+ selector: &quot;example1&quot;,
+ template: `&lt;ng-content&gt;&lt;/ng-content&gt;`,
+})
+export class Example1Component {
+ example1Method() {
+   console.log(&quot;example1Method called&quot;);
+ }
+}
+@Component({
+ template: `&lt;example1 #example1&gt;&lt;/example1&gt;`,
+})
+export class ExampleComponent implements AfterViewInit {
+ @ViewChild(&quot;example1&quot;) example1: Example1Component;
+
+ constructor() {}
+
+ ngAfterViewInit() {
+   this.example1.example1Method();
+ }
+}</code></pre>
+<p>We got the reference of example1’s class Example1Component by putting # in the ExampleComponent template. Then, we used ViewChild to tell Angular to set the instance of Example1Component to example1 variable.</p>
+<h3><strong>ngAfterViewChecked()</strong></h3>
+<p>This Angular lifecycle method gets called subsequently as it checks the component’s view and child view. This method gets called after <code>ngAfterViewInit()</code> and then for every <code>ngAfterContentChecked()</code> method. After checking and initialization are done, this lifecycle hook gets called.</p>
+<h3><strong>ngOnDestroy()</strong></h3>
+<p><code>ngOnDestroy()</code> is a lifecycle hook that is called when a directive, pipe, or service is destroyed. This lifecycle hook is used for any custom cleanup that needs to occur when the instance is destroyed, by doing so you can prevent memory leakage. This lifecycle hook is mostly used to unsubscribe from observable streams and detach event handlers to avoid memory leaks.</p>
+<h3><strong>Try it out!</strong></h3>

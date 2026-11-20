@@ -1,0 +1,93 @@
+<p class="callout"><strong>VIDEO</strong></p>
+<h3><strong>Watch a video on this topic </strong><a href="https://www.youtube.com/watch?v=h-F5uYM69a4" target="_blank" rel="noopener noreferrer"><strong>NGRX with Facades</strong></a></h3>
+<p>Now there is a new option when generating NgRx files to also generate a <strong>facade</strong> on top of your state management… to help you work even better at-scale.</p>
+<p>Facades are a programming pattern in which a simpler public interface is provided to mask a composition of internal, more-complex, component usages.</p>
+<p>When writing a lot of NgRx code — as many enterprises do — developers quickly accumulate large collections of actions and selectors classes. These classes are used to <code>[respectively]</code> dispatch requests to- and query from- the <code>NgRx Store</code>.</p>
+<p><img src="course-lessons/img/image25.webp" alt="Fascades"></p>
+<p>Unfortunately — with this standard approach — each view component is required to know about many NgRx artifacts and about NgRx state management.</p>
+<p>Using a Facade — to wrap and blackbox NgRx — simplifies accessing and modifying your NgRx state by <strong>masking</strong> internal all interactions with the <code>Store</code>, <code>actions</code>, <code>reducers</code>, <code>selectors</code>, and <code>Effects</code>.</p>
+<p><img src="course-lessons/img/image33.webp" alt="Fascades"></p>
+<p>While this seems like a rather trivial change (and an extra layer), the Facade has a huge positive impact of developer productivity and yields significantly less complexity in the view layers.</p>
+<p>Facades encourage developers to think in two (2) ways:</p>
+<ul><li>Developers are encouraged to think about explicit public facade API(s).
+</li><li>Developers start to think of views as presentational components that simply render data deliver from the Facade observables.
+</li></ul>
+<p class="callout"><strong>NOTE</strong></p>
+<p>Remember these Facade observables are long-lived streams of data delivered based on queries to specific NgRx state.</p>
+<h3><strong>Implementing our NgRx Facade</strong></h3>
+<p>First, let’s take a look at how a Facade is implemented as a injectable service.</p>
+<pre><code>@Injectable({
+ providedIn: &#x27;root&#x27;,
+})
+export class CarsFacade {
+ loaded$ = this.store.select(carsQuery.getIsLoaded);
+ allCars$ = this.store.select(carsQuery.getAllCars);
+ selectedCar$ = this.store.select(carsQuery.getSelectedCar);
+
+ constructor(private store: Store&lt;CarsState&gt;) {}
+
+ loadAllCars() {
+   this.store.dispatch(new LoadCar());
+ }
+
+ selectCar(carId: string) {
+   this.store.dispatch(new SelectCar(carId));
+ }
+}</code></pre>
+<p>The facade has an explicit public API that exposes: public <strong>observables</strong> (e.g. <code>allCars$</code> ) to private queries for Store state. public <strong>methods</strong> (e.g. <code>selectCar()</code> ) that hide internals of Store usages.</p>
+<h3><strong>View Components + NgRx</strong></h3>
+<p>Let’s take a look at why the Facade pattern is useful… by comparing a View Component implementation <strong>with</strong> and <strong>without</strong> facades.</p>
+<p>CarListComponent without Facades</p>
+<pre><code>import { Store } from &#x27;@ngrx/store&#x27;;
+import { CarsState } from &#x27;./state/car.reducer&#x27;;
+import { carQuery } from &#x27;./state/car.selectors&#x27;;
+import { LoadCar, SelectCar } from &#x27;./state/car.actions&#x27;;
+
+@Component({
+ template:`
+ &lt;ul&gt;
+   &lt;li *ngFor=&quot;let car of (allCars$ | async)&quot;
+        (click)=&quot;selectCar(car.id)&quot;&gt;
+     {{car.name}}
+   &lt;/li&gt;
+ &lt;/ul&gt;
+`
+})
+export class CarListComponent {
+ allCars$ = this.store.select(carQuery.getAllCars);
+ selectedCar$ = this.store.select(carQuery.getSelectedCar);
+
+ constructor(private store: Store&lt;CarsState&gt;) {
+   this.store.dispatch(new LoadCars());
+ }
+
+ selectCar(carId: string) {
+   this.store.dispatch(new SelectCar(carId));
+ }
+}</code></pre>
+<p>The simple <code>CarListComponent</code> definition above ^ is required to import NgRx actions, selectors, and know how to use <code>store.select()</code>, and <code>store.dispatch()</code>. For more real world usages, this quickly gets complicated and messy.</p>
+<p>CarListComponent with Facades</p>
+<pre><code>import { CarsFacade } from &#x27;./state/cars.facade&#x27;;
+
+@Component({
+ template: `
+ &lt;ul&gt;
+   &lt;li *ngFor=&quot;let car of (allCars$ | async)&quot;
+       (click)=&quot;carsFacade.selectCar(car.id)&quot;&gt;
+     {{car.name}}
+   &lt;/li&gt;
+ &lt;/ul&gt;
+`
+})
+export class CarListComponent {
+ allCars$ = this.carsFacade.allCars$;
+ selectedCar$ = this.carsFacade.selectedCar$;
+
+ constructor(public carsFacade: CarsFacade) {
+   this.carsFacade.loadAllCars();
+ }
+}</code></pre>
+<p>Developers will still leverage NgRx one-way data flows, immutable data structures, <code>store.dispatch()</code>, <code>store.select()</code>, effects for async processing, and more… but all this is hidden from the view layer.</p>
+<p>From a view component’s point-of-view, NgRx Facades provide a more explicit public API and less moving parts.</p>
+<p>Even better, Facades can inject and use other facades!</p>
+<h3><strong>Try it out!</strong></h3>

@@ -1,0 +1,67 @@
+<p class="callout"><strong>INFO</strong></p>
+<h3><strong>Original article: </strong><a href="https://angular.io/guide/architecture-components" target="_blank" rel="noopener noreferrer"><strong>Introduction to components and templates</strong></a><strong>.</strong></h3>
+<p class="callout"><strong>VIDEO</strong></p>
+<h3><strong>Watch a video on these topics:</strong></h3>
+<p><a href="https://www.linkedin.com/learning/angular-essential-training-2/components-bootstrap-and-the-dom" target="_blank" rel="noopener noreferrer">1. Components, Bootstrap, and the DOM</a></p>
+<p><a href="https://angular.io/guide/architecture-components" target="_blank" rel="noopener noreferrer">2. Component metadata</a></p>
+<p><a href="https://www.linkedin.com/learning/angular-essential-training-2/the-component-selector" target="_blank" rel="noopener noreferrer">3. The component selector</a></p>
+<p><a href="https://www.linkedin.com/learning/angular-essential-training-2/the-component-template" target="_blank" rel="noopener noreferrer">4. The component template</a></p>
+<p><a href="https://www.linkedin.com/learning/angular-essential-training-2/using-other-components-in-a-component" target="_blank" rel="noopener noreferrer">5. Using other components in a component</a></p>
+<p>Components are the main building block for Angular applications. Each component consists of:</p>
+<ul><li>An HTML template that declares what renders on the page
+</li><li>A Typescript class that defines behavior
+</li><li>A CSS selector that defines how the component is used in a template
+</li><li>Optionally, CSS styles applied to the template
+</li></ul>
+<p>You define a component&#x27;s application logic — what it does to support the view inside a class. The class interacts with the view through an API of properties and methods.</p>
+<p>For example, <code>ListItemsComponent</code> has a <code>items</code> property that holds an array of items. Its selectItem() method sets a selectedItem property when the user clicks to choose a item from that list.</p>
+<p>src/app/list-items.component.ts (metadata)</p>
+<pre><code>@Component({
+ selector: &quot;app-list-items&quot;,
+ templateUrl: &quot;./list-items.component.html&quot;,
+ styleUrls: &quot;./list-items.component.css&quot;,
+})
+export class ListItemsComponent {
+ items: Item[] = [
+   { id: 1, name: &quot;item1&quot; },
+   { id: 2, name: &quot;item2&quot; },
+   { id: 3, name: &quot;item3&quot; },
+ ];
+ selectedItem: Item;
+
+ selectItem(item: Item) {
+   this.selectedItem = item;
+   alert(`item id: ${item.id}, item name: ${item.name}`);
+ }
+}</code></pre>
+<h3><strong>Component metadata</strong></h3>
+<p>The <code>@Component</code> decorator identifies the class immediately below it as a component class, and specifies its metadata. In the example code above, you can see that <code>ListItemsComponent</code> is just a class, with no special Angular notation or syntax at all. It&#x27;s not a component until you mark it as one with the <code>@Component</code> decorator.</p>
+<p>The metadata for a component tells Angular where to get the major building blocks that it needs to create and present the component and its view. In particular, it associates a template with the component, either directly with inline code, or by reference. Together, the component and its template describe a view.</p>
+<p>In addition to containing or pointing to the template, the <code>@Component</code> metadata configures, for example, how the component can be referenced in HTML and what services it requires.</p>
+<p>This example shows some of the most useful <code>@Component</code> configuration options:</p>
+<ul><li><code>selector</code>: A CSS selector that tells Angular to create and insert an instance of this component wherever it finds the corresponding tag in template HTML. For example, if an application&#x27;s HTML contains <code>&lt;app-list-items&gt;&lt;/app-list-items&gt;</code>, then Angular inserts an instance of the <code>ListItemsComponent</code> view between those tags.
+</li><li><code>templateUrl</code>: The module-relative address of this component&#x27;s HTML template. Alternatively, you can provide the HTML template inline, as the value of the template property. This template defines the component&#x27;s host view.
+</li></ul>
+<h3><strong>Templates and views</strong></h3>
+<p>You define a component&#x27;s view with its companion template. A template is a form of HTML that tells Angular how to render the component.</p>
+<p>Views are typically arranged hierarchically, allowing you to modify or show and hide entire UI sections or pages as a unit. The template immediately associated with a component defines that component&#x27;s host view. The component can also define a view hierarchy, which contains embedded views, hosted by other components.</p>
+<p><img src="course-lessons/img/image10.webp" alt="Component Tree"></p>
+<p>A view hierarchy can include views from components in the same <em>NgModule</em>, but it also can (and often does) include views from components that are defined in different <em>NgModules</em>.</p>
+<h3><strong>Template syntax</strong></h3>
+<p>A template looks like regular HTML, except that it also contains Angular template syntax, which alters the HTML based on your application&#x27;s logic and the state of application and DOM data. Your template can use data binding to coordinate the application and DOM data, pipes to transform data before it is displayed, and directives to apply application logic to what gets displayed.</p>
+<p>For example, here is a template for the <code>ListItemsComponent</code>:</p>
+<p>src/app/list-items.component.html</p>
+<pre><code>&lt;h2&gt;Items List&lt;/h2&gt;
+
+&lt;p&gt;
+ &lt;em&gt;Select an item from the list to see details.&lt;/em&gt;
+&lt;/p&gt;
+
+&lt;div *ngFor=&quot;let value of items&quot;&gt;
+ &lt;button type=&quot;button&quot; (click)=&quot;selectItem(value)&quot;&gt;{{ value.name }}&lt;/button&gt;
+&lt;/div&gt;</code></pre>
+<p>This template uses typical HTML elements like <code>&lt;h2&gt;</code> and <code>&lt;p&gt;</code>, and also includes Angular template-syntax elements, <code>*ngFor</code>, <code>{{item.name}}</code> and <code>(click)</code>. The template-syntax elements tell Angular how to render the HTML to the screen, using program logic and data.</p>
+<ul><li>The <code>*ngFor</code> directive tells Angular to iterate over a list.
+</li><li><code>{{item.name}}</code> and <code>(click)</code> bind program data to and from the DOM, responding to user input.
+</li></ul>
+<h3><strong>Try it out!</strong></h3>

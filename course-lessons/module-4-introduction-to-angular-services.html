@@ -1,0 +1,22 @@
+<p class="callout"><strong>VIDEO</strong></p>
+<h2><strong>Watch a video:</strong></h2>
+<p><a href="https://www.linkedin.com/learning/angular-essential-training-2/services-in-angular" target="_blank" rel="noopener noreferrer"><strong>Services in Angular</strong></a></p>
+<h3><strong>What is the Need for Angular Services?</strong></h3>
+<p>We’re sure you are aware of the concept of <strong>components</strong> in Angular. The user interface of the application is developed by embedding several components into the main component.</p>
+<p>However, these components are generally used only for rendering purposes. They are only used to define what appears on the user interface. Ideally, other tasks, like data and image fetching, network connections, database management, are not performed. Then how are these tasks achieved? And what if more than one component performs similar tasks? Well, Services take care of this. They perform all the operational tasks for the components.</p>
+<h3><strong>What Are Angular Services?</strong></h3>
+<p>Angular services are objects that get instantiated just once during the lifetime of an application. They contain methods that maintain data throughout the life of an application, i.e., data is available all the time.</p>
+<p><img src="course-lessons/img/image9.webp" alt="Angular services"></p>
+<p>Image source: <a href="https://www.simplilearn.com/tutorials/angular-tutorial/angular-service" target="_blank" rel="noopener noreferrer"><strong>Simplilearn</strong></a></p>
+<p class="callout"><strong>TIP</strong></p>
+<p>The main objective of a service is to organize and share business logic, models, or data and functions with different components of an Angular application. They are usually implemented through dependency injection.</p>
+<h3><strong>Features of Angular Services</strong></h3>
+<ul><li>Services in Angular are simply typescript classes with the @injectible decorator. This decorator tells angular that the class is a service and can be injected into components that need that service. They can also inject other services as dependencies.
+</li><li>As mentioned earlier, these services are used to share a single piece of code across multiple components. These services are used to hold business logic.
+</li><li>Services are used to interact with the backend. For example, if you wish to make AJAX calls, you can have the methods to those calls in the service and use it as a dependency in files.
+</li></ul>
+<p><img src="course-lessons/img/image11.webp" alt="Angular services features"></p>
+<p>Image source: <a href="https://www.simplilearn.com/tutorials/angular-tutorial/angular-service" target="_blank" rel="noopener noreferrer"><strong>Simplilearn</strong></a></p>
+<ul><li>In angular, the components are singletons, meaning that only one instance of a service that gets created, and the same instance is used by every building block in the application.
+</li><li>A service can be registered as a part of the module, or as a part of the component. To register it as a part of the component, you’ll have to specify it in the providers’ array of the module.
+</li></ul>

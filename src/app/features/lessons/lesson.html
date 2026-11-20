@@ -1,0 +1,44 @@
+@if (lesson(); as lesson) {
+  <article class="app-plate lesson" aria-labelledby="lesson-title">
+    <div class="lesson__bar">
+      <app-button text="Back to About" iconName="arrow-left" (click)="back()" />
+      <span class="lesson__count">
+        Lesson {{ number() }} of {{ moduleLessons().length }} in module {{ lesson.module }}
+      </span>
+    </div>
+
+    <p class="lesson__module">Module {{ lesson.module }}: {{ topic() }}</p>
+    <h1 id="lesson-title" class="page-title">{{ lesson.title }}</h1>
+    <p class="lesson__note">
+      EPAM's course material (version 1.1.0). Much of it quotes the Angular documentation and the
+      articles it links to; those links open in a new tab.
+    </p>
+
+    @if (content.error()) {
+      <p class="form-alert" role="alert">The lesson could not be loaded. Please try again later.</p>
+    } @else if (content.hasValue()) {
+      <div class="lesson-body" [innerHTML]="content.value()"></div>
+    } @else {
+      <p class="lesson__note" role="status">Loading the lesson…</p>
+    }
+
+    <nav class="lesson__pager" aria-label="Lessons">
+      @if (previous(); as previous) {
+        <a class="lesson__previous" [routerLink]="['/lessons', previous.slug]" rel="prev">
+          <span class="lesson__direction">Previous</span>
+          {{ previous.title }}
+        </a>
+      }
+      @if (next(); as next) {
+        <a class="lesson__next" [routerLink]="['/lessons', next.slug]" rel="next">
+          <span class="lesson__direction">Next</span>
+          {{ next.title }}
+        </a>
+      }
+    </nav>
+  </article>
+} @else {
+  <app-info title="Lesson not found" text="There is no lesson with this name.">
+    <a routerLink="/about">See every lesson on the About page</a>
+  </app-info>
+}

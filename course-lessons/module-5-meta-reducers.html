@@ -1,0 +1,26 @@
+<p><code>@ngrx/store</code> composes your map of reducers into a single reducer.</p>
+<p>Developers can think of meta-reducers as hooks into the action-&gt;reducer pipeline. Meta-reducers allow developers to pre-process actions before normal reducers are invoked.</p>
+<p>Use the <code>metaReducers</code> configuration option to provide an array of meta-reducers that are composed from right to left.</p>
+<p class="callout"><strong>NOTE</strong></p>
+<p>Meta-reducers in NgRx are similar to middleware used in Redux.</p>
+<h3><strong>Using a meta-reducer to log all actions</strong></h3>
+<pre><code>import { StoreModule, ActionReducer, MetaReducer } from &quot;@ngrx/store&quot;;
+import { reducers } from &quot;./reducers&quot;;
+
+// console.log all actions
+export function debug(reducer: ActionReducer&lt;any&gt;): ActionReducer&lt;any&gt; {
+ return function (state, action) {
+   console.log(&quot;state&quot;, state);
+   console.log(&quot;action&quot;, action);
+
+   return reducer(state, action);
+ };
+}
+
+export const metaReducers: MetaReducer&lt;any&gt;[] = [debug];
+
+@NgModule({
+ imports: [StoreModule.forRoot(reducers, { metaReducers })],
+})
+export class AppModule {}</code></pre>
+<h3><strong>Try it out!</strong></h3>

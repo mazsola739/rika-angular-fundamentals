@@ -1,0 +1,58 @@
+<p>Anyone working on an Angular app should at least be familiar with RxJS. Actually the framework itself is build using RxJS and around some of its concepts. But there is more to that. In reality, we can use RxJS and observable streams to come up with better and more readable code and even reduce the number of lines (which translates to bundle size) that we write.</p>
+<h4><strong>Let me show you some examples of the practical use of RxJs in Angular.</strong></h4>
+<p class="callout"><strong>WARNING</strong></p>
+<p>Do not worry if some things seem unclear, you can return to these examples after learning the basics of the angular.</p>
+<h3><strong>HTTP + Async pipe</strong></h3>
+<p>In this example, you can see fetching repositories from Github’s API with Angular’s HTTP Client and displaying it as a list using rxjs and async pipe(built in Angular functionality) capabilities.</p>
+<p><img src="course-lessons/img/image6.webp" alt="Http_async"></p>
+<p>As you may have seen — we accomplished with a few RxJS lines what could have taken hundreds without. It is a powerful tool, that if understood well and used correctly, can really make your code beautiful and easy to read.</p>
+<p>See code example!</p>
+<h3><strong>Angular Router</strong></h3>
+<p>Router.events provides events as observables. You can use the <code>filter()</code> operator from RxJS to look for events of interest, and subscribe to them in order to make decisions based on the sequence of events in the navigation process. Here&#x27;s an example:</p>
+<pre><code>import { Router, NavigationStart } from &#x27;@angular/router&#x27;;
+import { filter } from &#x27;rxjs/operators&#x27;;
+
+@Component({
+ selector: &#x27;app-routable&#x27;,
+ template: &#x27;Routable1Component template&#x27;
+})
+export class Routable1Component implements OnInit {
+
+ navStart: Observable&lt;NavigationStart&gt;;
+
+ constructor(router: Router) {
+   // Create a new Observable that publishes only the NavigationStart event
+   this.navStart = router.events.pipe(
+     filter(evt =&gt; evt instanceof NavigationStart)
+   ) as Observable&lt;NavigationStart&gt;;
+ }
+
+ ngOnInit() {
+   this.navStart.subscribe(() =&gt; console.log(&#x27;Navigation Started!&#x27;));
+ }
+}</code></pre>
+<h3><strong>Reactive forms</strong></h3>
+<p>Reactive forms have properties that use observables to monitor form control values. The FormControl properties <code>valueChanges</code> and <code>statusChanges</code> contain observables that raise change events. Subscribing to an observable form-control property is a way of triggering application logic within the component class. For example:</p>
+<pre><code>import { FormGroup } from &#x27;@angular/forms&#x27;;
+
+@Component({
+ selector: &#x27;my-component&#x27;,
+ template: &#x27;MyComponent Template&#x27;
+})
+export class MyComponent implements OnInit {
+ heroNameInputControl: FormControl = new FormControl(&#x27;&#x27;);
+ heroesForm = new FormGroup({
+  firstName: new FormControl(&#x27;&#x27;, Validators.required),
+  lastName: new FormControl(&#x27;&#x27;),
+ });
+
+ ngOnInit() {
+  this.heroNameInputControl.valueChanges.pipe(
+   tap((value: string) =&gt; //...make API CAL for example)
+  ).subscribe();
+
+  this.heroesForm.statusChanges.pipe(
+   tap(({valid}) =&gt; // do something with validity state),
+  ).subscribe();
+ }
+}</code></pre>

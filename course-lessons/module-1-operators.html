@@ -1,0 +1,79 @@
+<p class="callout"><strong>INFO</strong></p>
+<h2><a href="https://rxjs-dev.firebaseapp.com/guide/operators" target="_blank" rel="noopener noreferrer"><strong>Official RxJS documentation</strong></a><strong>.</strong></h2>
+<p class="callout"><strong>VIDEO</strong></p>
+<h3><strong>Watch a videos on these topic:</strong></h3>
+<p><a href="https://www.linkedin.com/learning/learning-rxjs/take?autoplay=true&amp;resume=false&amp;u=2113185" target="_blank" rel="noopener noreferrer">1. Operators: take</a></p>
+<p><a href="https://www.linkedin.com/learning/learning-rxjs/map?autoplay=true&amp;resume=false&amp;u=2113185" target="_blank" rel="noopener noreferrer">2. Operators: map</a></p>
+<p><a href="https://www.linkedin.com/learning/learning-rxjs/filter?autoplay=true&amp;resume=false&amp;u=2113185" target="_blank" rel="noopener noreferrer">3. Operators: filter</a></p>
+<p><a href="https://www.linkedin.com/learning/learning-rxjs/mergemap?autoplay=true&amp;resume=false&amp;u=2113185" target="_blank" rel="noopener noreferrer">1. Flattening Operators: mergeMap</a></p>
+<p><a href="https://www.linkedin.com/learning/learning-rxjs/switchmap?autoplay=true&amp;resume=false&amp;u=2113185" target="_blank" rel="noopener noreferrer">2. Flattening Operators: switchMap</a></p>
+<p>An operator is a pure function that takes in observable as input and the output is also an observable. RxJS provides many operators, but only a handful are used frequently. For a list of operators and usage samples, visit the <a href="https://rxjs.dev/api" target="_blank" rel="noopener noreferrer">RxJS API documentation</a>.</p>
+<p class="callout"><strong>USEFUL LINK</strong></p>
+<p>You can see the description of operators with animation at the <a href="https://indepth.dev/reference/rxjs/operators" target="_blank" rel="noopener noreferrer">link</a>.</p>
+<div class="table-wrap"><table><tr><th><strong>Area</strong></th><th><strong>Operators</strong></th></tr><tr><td>Creation</td><td><code>from</code>, <code>fromEvent</code>, <code>of</code></td></tr><tr><td>Combination</td><td><code>combineLatest</code>, <code>concat</code>, <code>merge</code>, <code>startWith</code>, <code>withLatestFrom</code>, <code>zip</code></td></tr><tr><td>Filtering</td><td><code>debounceTime</code>, <code>distinctUntilChanged</code>, <code>filter</code>, <code>take</code>, <code>takeUntil</code></td></tr><tr><td>Transformation</td><td><code>bufferTime</code>, <code>concatMap</code>, <code>map</code>, <code>mergeMap</code>, <code>scan</code>, <code>switchMap</code></td></tr><tr><td>Utility</td><td><code>tap</code></td></tr><tr><td>Multicasting</td><td><code>share</code></td></tr></table></div>
+<p><img src="course-lessons/img/image12.webp" alt="Operators"></p>
+<p>For example you can have a stream which emits decimal numbers. You can then apply a Map operator and round the elements of a stream, which produces a new stream without decimals. You can again apply filter operator on the stream and say give values which are only greater than 3.</p>
+<p><img src="course-lessons/img/image17.webp" alt="Operators"></p>
+<p>Below is how the source code looks like. We have stream1 on which rounding operator is applied and stream2 is created and filter applied to create stream3.</p>
+<pre><code>let stream1 = Observable.create(AsyncStream);
+let stream2 = stream1.pipe(map((x) =&gt; Math.round(x)));
+let stream3 = stream2.pipe(filter((x) =&gt; x &gt; 3));
+stream3.subscribe((res) =&gt; Listener(res));
+
+function Listener(res) {
+ console.log(res);
+}</code></pre>
+<h3><strong>Combine operator </strong><code><strong>forkJoin</strong></code></h3>
+<p><code>forkJoin</code> takes a number of Input Observables and waits for all passed observables to complete. Once they complete, it will emit a group of the last values from corresponding Observables.</p>
+<p>The resulting stream emits only one time when all of the inner streams complete. It will never complete if any of the inner streams doesn’t complete and will throw an error if any of the inner streams errors out.</p>
+<p>The operator works in the following way:</p>
+<ul><li>Subscribe to all input Observables.
+</li><li>When a Source Observable emits a value, override the value in the cache corresponding to this Observable.
+</li><li>When a Source Observable completes, check if other Observables are completed.
+</li><li>Only after all Source Observables complete, emit the values from each Source Observables as an array.
+</li><li>Send the complete notification to the Observer.
+</li><li>If any of the source Observables throws an error, send the error notification to the Observer.
+</li></ul>
+<p>In the diagram below you can see the <code>forkJoin</code> operator combining two streams <code>A</code> and <code>B</code>. As soon as a corresponding pair is matched the resulting sequence produces a combined value:</p>
+<p><img src="course-lessons/img/image13.gif" alt="forkJoin"></p>
+<p>Here is the code example that demonstrates the setup shown by the above diagram:</p>
+<pre><code>const a = stream(&quot;a&quot;, 200, 3);
+const b = stream(&quot;b&quot;, 500, 3);
+
+forkJoin(a, b).subscribe(fullObserver(operator));</code></pre>
+<p>This operator can be used when there&#x27;s a group of streams and only care about the final emitted value of each. Often such sequences have only a single emission. For example, you may want to make multiples network requests and only want to take an action when a response has been received for all of them. It is in some way similar to Promise.all functionality. However, if you have a stream that emits more than one item, those items will be ignored except for the last value.</p>
+<h2><strong>Destroying an Observable</strong></h2>
+<p>To destroy an Observable is to essentially remove it from the DOM(?) by unsubscribing from it. Normally for asynchronous logic, RxJS takes care of unsubscribing and immediately after an error or a complete notification your Observable gets unsubscribed. For the knowledge, you can manually trigger unsubscribe with something like this:</p>
+<pre><code>return function unsubscribe() {
+ clearInterval(observable);
+};</code></pre>
+<p class="callout"><strong>USEFUL INFORMATION</strong></p>
+<p><a href="https://medium.com/impact-developers/how-to-destroy-observables-in-angular-313dec343b45" target="_blank" rel="noopener noreferrer">Additional and widely used option to unsubscribe</a></p>
+<h2><strong>Why Observables are so vital</strong></h2>
+<ul><li>Emitting multiple values asynchronously is very easily handled with Observables
+</li><li>Error handlers can also easily be done inside Observables rather than a construct like promises
+</li><li>Observables are considered lazy, so in case of no subscription there will be no emission of data values
+</li><li>Observables can be resolved multiple times as opposed to functions or even promises
+</li></ul>
+<h2><strong>Flattening Operators</strong></h2>
+<p><strong>switchMap, mergeMap, concatMap and exhaustMap</strong> are rxjs flattening operatators.</p>
+<p>They are considered as transformational operators since they transform an Observable after applying a function, to a new Observable. They help us to avoid situation where we have to nest subscription and things get messy. For example, when a user clicks a submit button (Source Observable), an http request is sent to the server (Inner Observable), then, we listen to the response.</p>
+<p>A simpler example would be as follows :</p>
+<p><img src="course-lessons/img/image16.webp" alt="inner subscription"></p>
+<p>The difference between them is based on the manner in which they act when the Source Observable emits while the inner subscription still in progress.</p>
+<p>Imagine this user clicks the submit button and an http request is sent to the server. While the user is waiting for a response he clicks again on the button.</p>
+<p><strong>What should Inner Observable do?🤔</strong><em>cancels active subscription and starts new one?maintains active subscription and ignores new one?maintains active subscription and starts new one?</em></p>
+<p>To answer these questions and more, we will make things simpler.</p>
+<p>We will imagine the Source Observable as client orders in restaurant, and, Inner Observable as a chef response to these orders.</p>
+<p><img src="course-lessons/img/image32.webp" alt="orders"></p>
+<p><strong>orders</strong> are Observable of strings representing different client orders.</p>
+<p><strong>prepareOrder</strong> will be the projection function, it takes an order as Observable. After preparing the order (it takes random time ⏲️ ) it sends back a new Observable (Inner Observable). 🍚</p>
+<h2><strong>mergeMap</strong></h2>
+<h2><strong>concatMap</strong></h2>
+<h2><strong>exhaustMap</strong></h2>
+<h2><strong>switchMap</strong></h2>
+<h3><strong>How flattening operators would represent themselves if they were chefs?</strong></h3>
+<p>-🤯 mergeMap: I&#x27;m a hard worker, I can prepare multiple orders at the same time ! But I don&#x27;t respect orders sequence.</p>
+<p>-😇 concatMap: I respect orders sequence! You will get your order as soon as I finish what I&#x27;m currently doing.</p>
+<p>-🙄 exhaustMap: I&#x27;m exhausted ! when I prepare an order, I won&#x27;t listen to any other order.</p>
+<p>-😈 switchMap: I&#x27;m mean ! your order will be in trash if I receive new one.</p>
