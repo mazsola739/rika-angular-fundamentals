@@ -1,0 +1,76 @@
+<h1 class="page-title">RxJS: Star Wars</h1>
+<div class="intro">
+  <p>
+    The first module of the course was RxJS. The task: make this little Star Wars page work in one
+    component, with the operators of the module. It talks to the free
+    <a appExternalLink href="https://swapi.dev">Star Wars API</a>; when that does not answer, a saved copy of its
+    names does.
+  </p>
+  <ul>
+    <li><code>Subject</code>, <code>filter</code>, <code>debounceTime</code> and <code>switchMap</code>: the search waits for {{ minLength }} letters and for you to stop typing, and a new search cancels the old one.</li>
+    <li><code>forkJoin</code>: the button asks for characters and planets at once and shows one list.</li>
+    <li><code>combineLatest</code>: the loader watches both requests and covers the page while both run.</li>
+  </ul>
+</div>
+
+<div class="star-wars">
+  <section class="app-plate" aria-labelledby="search-title">
+    <h2 id="search-title" class="star-wars__title">Search characters</h2>
+    <label for="character-search" class="visually-hidden">Search by characters</label>
+    <input
+      id="character-search"
+      type="search"
+      autocomplete="off"
+      placeholder="Search by characters"
+      aria-describedby="search-hint"
+      (input)="changeCharactersInput($event)"
+    />
+    <p id="search-hint" class="star-wars__hint">At least {{ minLength }} letters, e.g. “sky” or “dar”.</p>
+    <div aria-live="polite">
+      @if (searching()) {
+        <p class="star-wars__hint">Searching…</p>
+      }
+      @if (charactersResults$ | async; as results) {
+        @if (results.length > 0) {
+          <ul class="star-wars__results">
+            @for (item of results; track item.name) {
+              <li>{{ item.name }}</li>
+            }
+          </ul>
+        } @else {
+          <p>No results</p>
+        }
+      }
+    </div>
+  </section>
+
+  <section class="app-plate" aria-labelledby="load-title">
+    <h2 id="load-title" class="star-wars__title">Characters and planets</h2>
+    <app-button text="Load Characters And Planets" (click)="loadCharactersAndPlanet()" />
+    <div aria-live="polite">
+      @if (planetAndCharactersResults$(); as results$) {
+        @if (results$ | async; as results) {
+          @if (results.length > 0) {
+            <ul class="star-wars__results star-wars__results--columns">
+              @for (item of results; track $index) {
+                <li>{{ item.name }}</li>
+              }
+            </ul>
+          } @else {
+            <p>No results</p>
+          }
+        }
+      }
+    </div>
+  </section>
+</div>
+
+@if (usedSnapshot()) {
+  <p class="star-wars__hint" role="status">SWAPI did not answer in time, so the saved copy answered.</p>
+}
+
+@if (isLoading()) {
+  <div class="loader" role="status" aria-label="Loading">
+    <div class="loader__ring"></div>
+  </div>
+}

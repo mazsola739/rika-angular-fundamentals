@@ -1,0 +1,187 @@
+/*
+ * The look of the course's Figma design: Open Sans, a pale grey page, white plates, steel-blue
+ * buttons and dark-edged course cards, as tokens. Light only, as the design was.
+ */
+
+:root {
+  --page: #f7f7f7;
+  --surface: #fff;
+  --ink: #333e48;
+  --muted: #5c6670;
+  --line: #cfcfcf;
+  --field-line: #8a939b;
+  --field: #fff;
+  --accent: #007298;
+  --accent-hover: #016486;
+  --accent-active: #01506b;
+  --accent-text: #006a8d;
+  --accent-soft: rgb(0 114 152 / 12%);
+  --accent-ink: #fff;
+  --focus: #007298;
+  --danger: #c81e1e;
+  --card-edge: #333e48;
+  --shadow: rgb(0 0 0 / 25%);
+  --shadow-soft: rgb(0 0 0 / 15%);
+  --logo-disc: #75b9e0;
+  --logo-cap: #333e48;
+  --logo-band: #3d4249;
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--page);
+  color: var(--ink);
+  font-family: 'Open Sans Variable', 'Open Sans', system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.25;
+}
+
+a {
+  color: var(--accent-text);
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Form fields, as in the design. */
+input,
+textarea,
+select {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+  padding: 12px 16px;
+  border: 1px solid var(--field-line);
+  border-radius: 4px;
+  background: var(--field);
+  color: var(--ink);
+  font: inherit;
+  resize: vertical;
+
+  &::placeholder {
+    color: var(--muted);
+    opacity: 0.8;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 0;
+    border-color: transparent;
+  }
+
+  &[aria-invalid='true'] {
+    border-color: var(--danger);
+  }
+
+  &:disabled {
+    opacity: 0.75;
+  }
+}
+
+label,
+.label {
+  font-weight: 700;
+}
+
+.form-control {
+  margin-bottom: 24px;
+}
+
+.error-text {
+  display: block;
+  margin-top: 4px;
+  color: var(--danger);
+  font-size: 0.9375rem;
+}
+
+.form-alert {
+  margin: 0 0 24px;
+  padding: 12px 16px;
+  border-left: 4px solid var(--danger);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--danger) 10%, var(--surface));
+  color: var(--ink);
+
+  &--success {
+    border-left-color: var(--accent);
+    background: var(--accent-soft);
+  }
+}
+
+/* A white plate with a thin border: the forms and the course page sit on one. */
+.app-plate {
+  width: 100%;
+  padding: 32px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background-color: var(--surface);
+
+  @media (max-width: 600px) {
+    padding: 24px 16px;
+  }
+}
+
+.page-title {
+  margin: 0 0 32px;
+  font-size: 2rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+
+  &--center {
+    text-align: center;
+  }
+}
+
+.link-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent-text);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

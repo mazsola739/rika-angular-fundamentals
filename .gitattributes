@@ -1,0 +1,4 @@
+# Keep LF everywhere (Biome writes LF), even with core.autocrlf on Windows.
+* text=auto eol=lf
+*.lock text eol=lf -diff
+*.pdf binary

@@ -1,0 +1,31 @@
+@let item = course();
+<article class="course-card" [attr.aria-labelledby]="'course-' + item.id">
+  <div class="course-card__description">
+    <h3 class="course-card__title" [id]="'course-' + item.id">{{ item.title }}</h3>
+    <p class="course-card__text">{{ item.description }}</p>
+  </div>
+  <div class="course-card__info">
+    <dl class="course-card__facts">
+      <div>
+        <dt>Authors:</dt>
+        <dd>{{ item.authors.length ? item.authors.join(', ') : '–' }}</dd>
+      </div>
+      <div>
+        <dt>Duration:</dt>
+        <dd class="course-card__duration">{{ item.duration | duration }}</dd>
+      </div>
+      <div>
+        <dt>Created:</dt>
+        <dd class="course-card__date">{{ item.creationDate | customDate }}</dd>
+      </div>
+    </dl>
+    <div class="course-card__actions">
+      <app-button text="Show course" (click)="clickOnShow.emit(item.id)" />
+      @if (editable()) {
+        <div class="course-card__buttons">
+          <ng-content />
+        </div>
+      }
+    </div>
+  </div>
+</article>

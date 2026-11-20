@@ -1,0 +1,13 @@
+<header class="app-header">
+  <a class="app-header__logo" routerLink="/courses" aria-label="Courses, home">
+    <svg viewBox="0 0 48 48" width="48" height="48" aria-hidden="true">
+      <circle cx="24" cy="24" r="24" class="logo-disc" />
+      <path class="logo-cap" d="M24 12 8 19.5 24 27l13-6.1V29h3v-9.5Z" />
+      <path class="logo-cap" d="M14 24.2v6.3c0 2.8 4.5 5.5 10 5.5s10-2.7 10-5.5v-6.3L24 29Z" />
+    </svg>
+    <span class="app-header__name">Courses</span>
+  </a>
+  <div class="app-header__content">
+    <ng-content />
+  </div>
+</header>

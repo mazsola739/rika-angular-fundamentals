@@ -1,0 +1,89 @@
+.intro {
+  max-width: 50rem;
+  margin-bottom: 32px;
+
+  p {
+    margin-top: 0;
+  }
+
+  ul {
+    display: grid;
+    gap: 6px;
+    padding-left: 1.25rem;
+  }
+}
+
+.star-wars {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  align-items: start;
+  gap: 32px;
+
+  &__title {
+    margin: 0 0 16px;
+    font-size: 1.25rem;
+  }
+
+  &__hint {
+    margin: 8px 0 0;
+    color: var(--muted);
+    font-size: 0.9375rem;
+  }
+
+  &__results {
+    display: grid;
+    gap: 4px;
+    margin: 16px 0 0;
+    padding-left: 1.25rem;
+
+    &--columns {
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      column-gap: 32px;
+    }
+  }
+}
+
+/* The task's loader: a spinning, colour-shifting ring over the page. */
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgb(51 51 51 / 80%);
+
+  &__ring {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, transparent, transparent 40%, #e5f403);
+    animation: spin 2s linear infinite;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 6px;
+      z-index: 1;
+      border-radius: 50%;
+      background: #333;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: linear-gradient(45deg, transparent, transparent 40%, #e5f403);
+      filter: blur(20px);
+    }
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+    filter: hue-rotate(360deg);
+  }
+}

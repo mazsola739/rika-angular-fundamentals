@@ -1,0 +1,41 @@
+@if (found(); as sheet) {
+  <article class="app-plate task-sheet" aria-labelledby="sheet-title">
+    <div class="task-sheet__bar">
+      <app-button text="Back to About" iconName="arrow-left" (click)="back()" />
+      <a appExternalLink [href]="sheet.url">Open the PDF</a>
+    </div>
+
+    <h1 id="sheet-title" class="page-title">{{ heading() }}</h1>
+
+    @if (sameModule().length > 1) {
+      <nav [attr.aria-label]="'Task sheets of module ' + sheet.module">
+        <ul class="task-sheet__tabs">
+          @for (item of sameModule(); track item.slug) {
+            <li>
+              <a
+                [routerLink]="['/tasks', item.slug]"
+                [attr.aria-current]="item.slug === sheet.slug ? 'page' : null"
+                >{{ item.label }}</a
+              >
+            </li>
+          }
+        </ul>
+      </nav>
+    }
+
+    <p class="task-sheet__note">
+      EPAM's material from the Angular Fundamentals course (version 1.1.0); the solutions in this app
+      are mine.
+    </p>
+
+    @defer (on immediate) {
+      <app-pdf-pages [url]="sheet.url" [title]="heading()" />
+    } @placeholder {
+      <p class="task-sheet__note" role="status">Loading the task sheet…</p>
+    }
+  </article>
+} @else {
+  <app-info title="Task sheet not found" text="There is no task sheet with this name.">
+    <a routerLink="/about">See every task sheet on the About page</a>
+  </app-info>
+}

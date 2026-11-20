@@ -1,0 +1,12 @@
+<footer class="app-footer">
+  <p>EPAM Angular Fundamentals homework, 2021 · written again in 2026</p>
+  <nav aria-label="Project" class="app-footer__nav">
+    <a routerLink="/about">About</a>
+    <a routerLink="/rxjs">RxJS page</a>
+    <a appExternalLink [href]="repoUrl">Code</a>
+    <a appExternalLink [href]="portfolioUrl">Portfolio</a>
+    @if (canReset) {
+      <button type="button" class="link-button" (click)="resetData()">Reset demo data</button>
+    }
+  </nav>
+</footer>

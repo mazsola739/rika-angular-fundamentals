@@ -1,0 +1,18 @@
+<button
+  class="app-button"
+  [class.app-button--quiet]="variant() === 'quiet'"
+  [class.app-button--single-icon]="!text()"
+  [class.app-button--wide]="wide()"
+  [class.app-button--small]="small()"
+  [type]="type()"
+  [disabled]="disabled()"
+  [attr.aria-label]="label() ?? null"
+  [attr.title]="!text() ? (label() ?? null) : null"
+>
+  @if (icon(); as icon) {
+    <fa-icon [icon]="icon" aria-hidden="true" />
+  }
+  @if (text()) {
+    <span>{{ text() }}</span>
+  }
+</button>

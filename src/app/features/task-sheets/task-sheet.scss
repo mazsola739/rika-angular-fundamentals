@@ -1,0 +1,52 @@
+.task-sheet {
+  max-width: 64rem;
+  margin: 0 auto;
+
+  &__bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px 24px;
+    margin-bottom: 24px;
+
+    a {
+      font-weight: 600;
+      text-underline-offset: 3px;
+    }
+  }
+
+  &__tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0 0 16px;
+    padding: 0;
+    list-style: none;
+
+    a {
+      display: block;
+      padding: 4px 14px;
+      border: 1px solid var(--accent);
+      border-radius: 4px;
+      color: var(--accent-text);
+      text-decoration: none;
+
+      &:hover {
+        background: var(--accent-soft);
+      }
+
+      &[aria-current='page'] {
+        background: var(--accent);
+        color: var(--accent-ink);
+        font-weight: 600;
+      }
+    }
+  }
+
+  &__note {
+    margin: 0 0 24px;
+    color: var(--muted);
+    font-size: 0.9375rem;
+  }
+}

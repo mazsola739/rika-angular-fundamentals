@@ -1,0 +1,23 @@
+# dependencies
+/node_modules
+
+# build output and caches
+/dist
+/out-tsc
+/.angular
+/coverage
+*.tsbuildinfo
+
+# the Bun server's data file (bun run server)
+/server/data
+
+# logs
+*.log
+
+# editor and OS
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+Thumbs.db
+*.local

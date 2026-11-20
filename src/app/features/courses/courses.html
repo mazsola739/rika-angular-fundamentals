@@ -1,0 +1,64 @@
+<h1 class="visually-hidden">Courses</h1>
+
+@if (courses.errorMessage(); as error) {
+  <p class="form-alert" role="alert">
+    {{ error }}
+    <button type="button" class="link-button" (click)="courses.clearError()">Hide</button>
+  </p>
+}
+
+@if (!courses.isLoaded()) {
+  <p class="status" role="status">Loading the courses…</p>
+} @else if (courses.allCourses().length === 0) {
+  @if (userStore.isAdmin()) {
+    <app-info
+      title="Your list is empty"
+      text="Please use ’Add New Course’ button to add your first course"
+    >
+      <app-button text="Add new course" iconName="plus" (click)="addCourse()" />
+    </app-info>
+  } @else {
+    <app-info title="Your list is empty" text="There are no courses yet. Come back later!" />
+  }
+} @else {
+  <div class="toolbar">
+    <app-search
+      placeholder="Search by title or id"
+      label="Search the courses"
+      [value]="courses.searchValue()"
+      (search)="search($event)"
+    />
+    <app-button *appIfAdmin text="Add new course" iconName="plus" (click)="addCourse()" />
+  </div>
+
+  @if (courses.isSearchingState()) {
+    <p class="status" role="status">
+      {{ cards().length }} {{ cards().length === 1 ? 'course' : 'courses' }} found for
+      “{{ courses.searchValue() }}”.
+      <button type="button" class="link-button" (click)="search('')">Show every course</button>
+    </p>
+  }
+
+  @if (cards().length) {
+    <app-courses-list
+      [courses]="cards()"
+      [editable]="userStore.isAdmin()"
+      (showCourse)="showCourse($event)"
+      (editCourse)="editCourse($event)"
+      (deleteCourse)="askDelete($event)"
+    />
+  } @else {
+    <app-info title="No courses found" text="No title or id matches your search. Try another one." />
+  }
+}
+
+@if (toDelete(); as course) {
+  <app-modal
+    title="Delete course"
+    [message]="'Do you want to delete “' + course.title + '”? This cannot be undone.'"
+    okButtonText="Delete"
+    cancelButtonText="Cancel"
+    (confirmed)="confirmDelete(course.id)"
+    (cancelled)="toDelete.set(null)"
+  />
+}

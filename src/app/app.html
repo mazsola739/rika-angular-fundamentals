@@ -1,0 +1,14 @@
+<a class="skip-link" href="#main" (click)="$event.preventDefault(); main.focus()">Skip to content</a>
+<app-header>
+  @if (auth.isAuthorized()) {
+    <span class="user-name">{{ userStore.name() }}</span>
+    <app-button text="Logout" iconName="right-from-bracket" (click)="logout()" />
+  } @else {
+    <a class="header-link" routerLink="/login">Login</a>
+    <a class="header-link" routerLink="/registration">Registration</a>
+  }
+</app-header>
+<main id="main" #main tabindex="-1" class="page">
+  <router-outlet />
+</main>
+<app-footer />

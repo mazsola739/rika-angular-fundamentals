@@ -1,0 +1,25 @@
+@if (course(); as course) {
+  <h1 class="page-title">{{ course.title }}</h1>
+  <article class="app-plate course-info" aria-label="Course details">
+    <section class="course-info__description">
+      <h2 class="course-info__heading">Description:</h2>
+      <p class="course-info__text">{{ course.description }}</p>
+    </section>
+    <dl class="course-info__facts">
+      <dt>ID:</dt>
+      <dd class="course-info__id">{{ course.id }}</dd>
+      <dt>Duration:</dt>
+      <dd>{{ course.duration | duration }}</dd>
+      <dt>Created:</dt>
+      <dd>{{ course.creationDate | customDate }}</dd>
+      <dt>Authors:</dt>
+      <dd>{{ authorNames().length ? authorNames().join(', ') : '–' }}</dd>
+    </dl>
+  </article>
+  <div class="course-info__actions">
+    <app-button *appIfAdmin text="Edit" iconName="pen" (click)="edit()" />
+    <app-button text="Back" iconName="arrow-left" (click)="back()" />
+  </div>
+} @else {
+  <p class="status" role="status">Loading the course…</p>
+}

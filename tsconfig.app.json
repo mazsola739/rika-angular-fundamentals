@@ -1,0 +1,9 @@
+/* The app, and the backend code it runs in the browser (server/browser.ts). */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": []
+  },
+  "include": ["src/**/*.ts", "server/api.ts", "server/browser.ts"],
+  "exclude": ["src/**/*.spec.ts", "src/test-setup.ts", "src/testing/**"]
+}

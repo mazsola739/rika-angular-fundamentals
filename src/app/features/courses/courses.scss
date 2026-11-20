@@ -1,0 +1,16 @@
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 48px;
+  margin-bottom: 32px;
+
+  app-search {
+    display: flex;
+    flex: 1 1 420px;
+  }
+}
+
+.status {
+  margin: 0 0 24px;
+  color: var(--muted);
+}

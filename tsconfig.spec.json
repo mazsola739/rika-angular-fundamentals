@@ -1,0 +1,14 @@
+/* The unit tests: the app's and the backend's. */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["vitest/globals"]
+  },
+  "include": [
+    "src/**/*.d.ts",
+    "src/**/*.spec.ts",
+    "src/test-setup.ts",
+    "src/testing/**/*.ts",
+    "server/**/*.spec.ts"
+  ]
+}

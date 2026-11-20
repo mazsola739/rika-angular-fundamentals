@@ -1,0 +1,75 @@
+<article class="app-plate about" aria-labelledby="about-title">
+  <h1 id="about-title" class="page-title">About this app</h1>
+  <p>
+    This courses app is my homework from the <b>Angular Fundamentals</b> course of EPAM, in 2021.
+    The course had five modules, and from the second one on the same app grew: components first, then forms,
+    directives and pipes, then routing and services, then an NgRx store. EPAM gave the task sheets,
+    a template project and a NestJS backend to run on localhost.
+  </p>
+  <p>
+    My code from the course got lost, so in 2026 I wrote the app again from the task sheets (a
+    slightly newer version of them, the one I still have), with Angular 22: standalone components, signals, functional guards and interceptors, NgRx with
+    functional effects. The backend is my own, the same one my
+    <a appExternalLink [href]="reactAppUrl">React Fundamentals app</a> uses: a small API without a
+    framework that runs as a Bun server on my machine and, on this site, inside your browser. It
+    keeps its data in your browser's localStorage, so feel free to add, edit and delete;
+    <i>Reset demo data</i> at the bottom brings the starting courses back.
+  </p>
+
+  <h2>The five modules</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Module</th>
+          <th scope="col">Topic</th>
+          <th scope="col">What the app got</th>
+          <th scope="col">Task sheets</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of modules; track item.module) {
+          <tr>
+            <td>{{ item.module }}</td>
+            <td class="topic">{{ item.topic }}</td>
+            <td>
+              {{ item.got }}
+              @if (item.page; as page) {
+                · <a [routerLink]="page.route">{{ page.label }}</a>
+              }
+            </td>
+            <td>
+              <ul class="sheets">
+                @for (sheet of item.sheets; track sheet.slug) {
+                  <li>
+                    <a
+                      [routerLink]="['/tasks', sheet.slug]"
+                      [attr.aria-label]="'Module ' + item.module + ' ' + sheet.label"
+                      >{{ sheet.label }}</a
+                    >
+                  </li>
+                }
+              </ul>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Try it</h2>
+  <ul>
+    @for (account of demoAccounts; track account.email) {
+      <li>
+        <b>{{ account.label }}</b> ({{ account.can }}): <code>{{ account.email }}</code> /
+        <code>{{ account.password }}</code>
+      </li>
+    }
+    <li>Or <a routerLink="/registration">register</a> a student account of your own.</li>
+  </ul>
+
+  <p class="links">
+    <a appExternalLink [href]="repoUrl">Code on GitHub</a>
+    <a appExternalLink [href]="portfolioUrl">My portfolio</a>
+  </p>
+</article>

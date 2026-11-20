@@ -1,0 +1,198 @@
+<h1 class="page-title">{{ isEdit() ? 'Edit course' : 'Create course' }}</h1>
+
+@if (!ready()) {
+  <p class="status" role="status">Loading the course…</p>
+} @else {
+  <form
+    #formDirective="ngForm"
+    novalidate
+    [formGroup]="form"
+    (ngSubmit)="submit()"
+    aria-labelledby="main-info-title"
+  >
+    <div class="app-plate course-form">
+      @if (courses.errorMessage(); as error) {
+        <p class="form-alert" role="alert">{{ error }}</p>
+      }
+
+      <h2 id="main-info-title" class="course-form__heading">Main Info</h2>
+
+      @let title = form.controls.title;
+      <div class="form-control">
+        <label for="title">Title</label>
+        <input
+          id="title"
+          type="text"
+          placeholder="Input text"
+          formControlName="title"
+          [attr.aria-invalid]="showError(title, formDirective)"
+          [attr.aria-describedby]="showError(title, formDirective) ? 'titleErrorMessage' : null"
+        />
+        @if (showError(title, formDirective)) {
+          <span id="titleErrorMessage" class="error-text">
+            @if (title.hasError('required')) {
+              Title is required.
+            } @else {
+              Title should be at least 2 characters long.
+            }
+          </span>
+        }
+      </div>
+
+      @let description = form.controls.description;
+      <div class="form-control">
+        <label for="description">Description</label>
+        <textarea
+          id="description"
+          placeholder="Input text"
+          rows="6"
+          formControlName="description"
+          [attr.aria-invalid]="showError(description, formDirective)"
+          [attr.aria-describedby]="
+            showError(description, formDirective) ? 'descriptionErrorMessage' : null
+          "
+        ></textarea>
+        @if (showError(description, formDirective)) {
+          <span id="descriptionErrorMessage" class="error-text">
+            @if (description.hasError('required')) {
+              Description is required.
+            } @else {
+              Description should be at least 2 characters long.
+            }
+          </span>
+        }
+      </div>
+
+      <h2 class="course-form__heading">Duration</h2>
+      @let duration = form.controls.duration;
+      <div class="form-control">
+        <label for="duration">Duration (minutes)</label>
+        <div class="course-form__row">
+          <input
+            id="duration"
+            type="number"
+            inputmode="numeric"
+            min="1"
+            step="1"
+            placeholder="Input text"
+            formControlName="duration"
+            [attr.aria-invalid]="showError(duration, formDirective)"
+            [attr.aria-describedby]="
+              showError(duration, formDirective)
+                ? 'durationErrorMessage durationPreview'
+                : 'durationPreview'
+            "
+          />
+          <output id="durationPreview" class="course-form__preview" for="duration">
+            {{ duration.value | duration }}
+          </output>
+        </div>
+        @if (showError(duration, formDirective)) {
+          <span id="durationErrorMessage" class="error-text">
+            @if (duration.hasError('required')) {
+              Duration is required.
+            } @else {
+              Duration should be a whole number of minutes, at least 1.
+            }
+          </span>
+        }
+      </div>
+
+      <div class="course-form__authors">
+        <section aria-labelledby="authors-title">
+          <h2 id="authors-title" class="course-form__heading">Authors</h2>
+
+          @let newAuthor = form.controls.newAuthor.controls.author;
+          <div class="form-control" formGroupName="newAuthor">
+            <label for="author">Author Name</label>
+            <div class="course-form__row">
+              <input
+                id="author"
+                type="text"
+                placeholder="Input Author Name"
+                formControlName="author"
+                (keydown.enter)="$event.preventDefault(); createAuthor()"
+                [attr.aria-invalid]="newAuthor.invalid && newAuthor.touched"
+                [attr.aria-describedby]="
+                  newAuthor.invalid && newAuthor.touched ? 'authorErrorMessage' : null
+                "
+              />
+              <app-button
+                id="createAuthor"
+                text="Create author"
+                [disabled]="authors.isCreating()"
+                (click)="createAuthor()"
+              />
+            </div>
+            @if (newAuthor.invalid && newAuthor.touched) {
+              <span id="authorErrorMessage" class="error-text">
+                @if (newAuthor.hasError('minlength')) {
+                  Author name should be at least 2 characters long.
+                } @else {
+                  New author should contain only latin letters and numbers.
+                }
+              </span>
+            }
+            @if (authors.errorMessage(); as error) {
+              <span class="error-text" role="alert">{{ error }}</span>
+            }
+          </div>
+
+          <h3 class="course-form__subheading">Authors List</h3>
+          @if (availableAuthors().length) {
+            <ul class="author-list">
+              @for (author of availableAuthors(); track author.id) {
+                <li>
+                  <span>{{ author.name }}</span>
+                  <app-button
+                    variant="quiet"
+                    [small]="true"
+                    iconName="plus"
+                    [label]="'Add ' + author.name + ' to the course'"
+                    (click)="addAuthor(author.id)"
+                  />
+                </li>
+              }
+            </ul>
+          } @else {
+            <p class="course-form__empty">Every author is on the course.</p>
+          }
+        </section>
+
+        <section aria-labelledby="course-authors-title" class="course-form__course-authors">
+          <h2 id="course-authors-title" class="course-form__heading">Course Authors</h2>
+          @if (courseAuthors().length) {
+            <ul class="author-list" formArrayName="authors">
+              @for (author of courseAuthors(); track author.id; let index = $index) {
+                <li>
+                  <span>{{ author.name }}</span>
+                  <app-button
+                    variant="quiet"
+                    [small]="true"
+                    iconName="trash-can"
+                    [label]="'Remove ' + author.name + ' from the course'"
+                    (click)="removeAuthor(index)"
+                  />
+                </li>
+              }
+            </ul>
+          } @else {
+            <p class="course-form__empty">Author list is empty</p>
+          }
+          @if (showError(form.controls.authors, formDirective)) {
+            <span class="error-text">Please add at least one author.</span>
+          }
+        </section>
+      </div>
+    </div>
+
+    <div class="course-form__actions">
+      <app-button text="Cancel" (click)="cancel()" />
+      <app-button
+        type="submit"
+        [text]="isEdit() ? 'Update course' : 'Create course'"
+        [disabled]="courses.isSaving()"
+      />
+    </div>
+  </form>
+}

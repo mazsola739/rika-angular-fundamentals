@@ -1,0 +1,10 @@
+/* The backend as a Bun server: bun run server. */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["bun"],
+    "noEmit": true
+  },
+  "include": ["server/**/*.ts"],
+  "exclude": ["server/**/*.spec.ts"]
+}

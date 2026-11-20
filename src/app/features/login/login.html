@@ -1,0 +1,89 @@
+<h1 class="page-title page-title--center">Login</h1>
+<div class="app-plate auth-plate">
+  <form #loginForm="ngForm" class="auth-form" novalidate (ngSubmit)="submit(loginForm)">
+    @if (registered() && !serverError()) {
+      <p class="form-alert form-alert--success" role="status">
+        Your account is ready. Log in with {{ registered() }}.
+      </p>
+    }
+    @if (serverError()) {
+      <p class="form-alert" role="alert">{{ serverError() }}</p>
+    }
+
+    <div class="form-control">
+      <label for="email">Email</label>
+      <input
+        id="email"
+        name="email"
+        type="email"
+        autocomplete="username"
+        placeholder="Input text"
+        required
+        emailValidator
+        #emailModel="ngModel"
+        [(ngModel)]="email"
+        [attr.aria-invalid]="showError(emailModel, loginForm)"
+        [attr.aria-describedby]="showError(emailModel, loginForm) ? 'emailErrorMessage' : null"
+      />
+      @if (showError(emailModel, loginForm)) {
+        <span id="emailErrorMessage" class="error-text">
+          @if (emailModel.hasError('required')) {
+            Email is required.
+          } @else {
+            Please enter a valid email address.
+          }
+        </span>
+      }
+    </div>
+
+    <div class="form-control">
+      <label for="password">Password</label>
+      <div class="password-field">
+        <input
+          id="password"
+          name="password"
+          autocomplete="current-password"
+          placeholder="Input text"
+          required
+          appTogglePassword
+          #passwordToggle="togglePassword"
+          #passwordModel="ngModel"
+          [(ngModel)]="password"
+          [attr.aria-invalid]="showError(passwordModel, loginForm)"
+          [attr.aria-describedby]="showError(passwordModel, loginForm) ? 'passwordErrorMessage' : null"
+        />
+        <app-button
+          variant="quiet"
+          [iconName]="passwordToggle.visible() ? 'eye' : 'eye-slash'"
+          [label]="passwordToggle.visible() ? 'Hide password' : 'Show password'"
+          (click)="passwordToggle.toggle()"
+        />
+      </div>
+      @if (showError(passwordModel, loginForm)) {
+        <span id="passwordErrorMessage" class="error-text">Password is required.</span>
+      }
+    </div>
+
+    <div class="form-action">
+      <app-button type="submit" text="Login" [wide]="true" [disabled]="loading()" />
+    </div>
+    <p class="form-text">
+      If you don't have an account you may
+      <a routerLink="/registration"><strong>Registration</strong></a>
+    </p>
+  </form>
+
+  <aside class="demo" aria-labelledby="demo-title">
+    <h2 id="demo-title" class="demo__title">Demo accounts</h2>
+    <ul class="demo__list">
+      @for (account of demoAccounts; track account.email) {
+        <li>
+          <button type="button" class="link-button" (click)="fillIn(account)">
+            Fill in {{ account.label }}
+          </button>
+          <span class="demo__note">{{ account.email }} · {{ account.can }}</span>
+        </li>
+      }
+    </ul>
+  </aside>
+</div>
