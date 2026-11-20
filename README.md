@@ -6,7 +6,7 @@ RxJS task of the course: a small Star Wars search.
 **Live:** <https://mazsola739.github.io/rika-angular-fundamentals/> · **Portfolio:** <https://mazsola739.github.io/mazsola739/> · **The same app in React:** <https://mazsola739.github.io/rika-react-fundamentals/>
 
 It was my homework for EPAM's **Angular Fundamentals** course in 2021: five modules, from RxJS to
-an NgRx store, and from the second module on the same app grew. EPAM gave the task sheets, a
+an NgRx store, and from the second module on the same app grew. The course gave the task sheets, a
 template project and a NestJS backend to run on localhost. My code from the course got lost; what I
 still have is a later version of the course material (1.1.0, with an Angular 15 template). So in
 2026 I wrote the app again from those task sheets, with today's Angular, and put it on the same
@@ -50,7 +50,7 @@ listed module by module on the About page, each on a page of its own (`/#/lesson
 | `BehaviorSubject` pairs in the services (`isAuthorized$$` + `isAuthorized$`) | The same pair as a private signal and its `asReadonly()` view                                                                 |
 | NgRx 15, `CoursesEffects` class, facade with Observables                     | NgRx 22: functional effects, a facade with `selectSignal`; authors as a second feature (`createActionGroup`, `createFeature`) |
 | Jest                                                                         | Vitest through `ng test`: 79 tests, 19 of them for the backend                                                                |
-| EPAM's NestJS backend on `localhost:4000`                                    | My own backend: a Bun server, or the same code in the browser                                                                 |
+| A NestJS backend on `localhost:4000`                                         | My own backend: a Bun server, or the same code in the browser                                                                 |
 | Plain passwords in a JSON file                                               | PBKDF2 hashes, expiring tokens                                                                                                |
 | Figma screens for the desktop                                                | The Figma look, on phones too, keyboard and screen reader friendly                                                            |
 | The course material in one big document                                      | The five task sheets as PDFs, shown inside the app with pdf.js                                                                |
@@ -58,7 +58,7 @@ listed module by module on the About page, each on a page of its own (`/#/lesson
 ## The backend is mine
 
 The same backend as my React Fundamentals app (the course's backend was the same NestJS app too):
-the endpoints and the answers of EPAM's backend, but no framework, only the web platform's
+the endpoints and the answers of the course's backend, but no framework, only the web platform's
 `Request` and `Response`. On GitHub Pages there is no server, so the app's last HTTP interceptor
 ([`browser-backend.interceptor.ts`](src/app/core/browser-backend.interceptor.ts)) hands the requests
 to the backend running in the browser; `HttpClient`, the token interceptor and the services do not
@@ -140,7 +140,7 @@ src/app/
   features/        login, registration, courses (+ list), course page, course form,
                    the RxJS Star Wars page, about, 404
 src/testing/       renders the whole app with the backend in memory
-course-tasks/      EPAM's task sheets of the five modules (PDF)
+course-tasks/      the course's task sheets of the five modules (PDF)
 course-lessons/    the lessons of the course as HTML, with their pictures
 ```
 

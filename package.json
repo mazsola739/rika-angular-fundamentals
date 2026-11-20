@@ -2,7 +2,7 @@
   "name": "rika-angular-fundamentals",
   "private": true,
   "version": "2.0.0",
-  "description": "My courses app from EPAM's Angular Fundamentals course, written again in 2026 with Angular 22, NgRx and a backend of my own",
+  "description": "My courses app from an Angular Fundamentals course, written again in 2026 with Angular 22, NgRx and a backend of my own",
   "engines": {
     "node": ">=22.22.3"
   },
