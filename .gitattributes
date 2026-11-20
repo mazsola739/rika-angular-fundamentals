@@ -2,3 +2,6 @@
 * text=auto eol=lf
 *.lock text eol=lf -diff
 *.pdf binary
+
+# The course's lesson pages are material to read, not my code: leave them out of GitHub's language bar.
+course-lessons/** linguist-documentation
